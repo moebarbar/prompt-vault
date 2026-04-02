@@ -14,7 +14,7 @@ import { useSavedPrompts } from "@/lib/useSavedPrompts";
 import { font } from "@/fonts";
 import { LogoSmall } from "@/components/navigation/Logo";
 
-const PAGE_SIZE = 24;
+const PAGE_SIZE = 48; // larger page size so grouped view has enough per section
 
 // Precompute category map for quick lookups
 const CAT_MAP = Object.fromEntries(CATEGORIES.map((c) => [c.id, c]));
@@ -157,6 +157,39 @@ const PromptModal = ({ prompt, onClose, savedIds, onToggleSave, user }) => {
         </div>
         <p className="mt-3 text-center text-xs text-zinc-400">Works with: {prompt.model}</p>
       </motion.div>
+    </div>
+  );
+};
+
+// ── Grouped prompt grid (by subcategory) ─────────────────────────────────────
+const GroupedGrid = ({ prompts, onOpen, savedIds, onToggleSave, user }) => {
+  // Group by subcategory, "General" for nulls
+  const groups = [];
+  const seen = new Map();
+  for (const p of prompts) {
+    const key = p.subcategory || "General";
+    if (!seen.has(key)) { seen.set(key, []); groups.push(key); }
+    seen.get(key).push(p);
+  }
+  return (
+    <div className="space-y-10">
+      {groups.map((group) => (
+        <div key={group}>
+          <div className="mb-4 flex items-center gap-3">
+            <h2 className="text-base font-black text-zinc-900">{group}</h2>
+            <span className="rounded-full bg-indigo-50 px-2 py-0.5 text-xs font-bold text-indigo-600">
+              {seen.get(group).length}
+            </span>
+            <div className="flex-1 border-t-2 border-zinc-100" />
+          </div>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            {seen.get(group).map((prompt) => (
+              <PromptCard key={prompt.id} prompt={prompt} onOpen={onOpen}
+                savedIds={savedIds} onToggleSave={onToggleSave} user={user} />
+            ))}
+          </div>
+        </div>
+      ))}
     </div>
   );
 };
@@ -473,8 +506,17 @@ export default function Library() {
             </div>
           ) : (
             <>
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
-                <AnimatePresence>
+              {/* Grouped by subcategory when browsing a category without filters */}
+              {activeCat && !activeSub && !search && !showSavedOnly ? (
+                <GroupedGrid
+                  prompts={displayedPrompts}
+                  onOpen={setSelectedPrompt}
+                  savedIds={savedIds}
+                  onToggleSave={toggleSave}
+                  user={user}
+                />
+              ) : (
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
                   {displayedPrompts.map((prompt) => (
                     <PromptCard
                       key={prompt.id}
@@ -485,8 +527,8 @@ export default function Library() {
                       user={user}
                     />
                   ))}
-                </AnimatePresence>
-              </div>
+                </div>
+              )}
 
               {/* Load more */}
               {hasMore && !showSavedOnly && (
@@ -501,7 +543,6 @@ export default function Library() {
                 </div>
               )}
 
-              {/* Skeleton rows while loading more */}
               {loadingMore && (
                 <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
                   {Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={`more-${i}`} />)}

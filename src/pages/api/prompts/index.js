@@ -15,7 +15,7 @@
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
 import { CATEGORIES } from "@/data/prompts";
 
-const DEFAULT_LIMIT = 24;
+const DEFAULT_LIMIT = 48;
 
 export default async function handler(req, res) {
   if (req.method !== "GET") {
@@ -24,7 +24,7 @@ export default async function handler(req, res) {
 
   const { cat, sub, search, sort, source } = req.query;
   const page = Math.max(1, parseInt(req.query.page) || 1);
-  const limit = Math.min(100, parseInt(req.query.limit) || DEFAULT_LIMIT);
+  const limit = Math.min(200, parseInt(req.query.limit) || DEFAULT_LIMIT);
   const offset = (page - 1) * limit;
 
   // Validate category if provided
