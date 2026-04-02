@@ -38,6 +38,19 @@ export const Copy = () => {
           <Button intent="outline">Browse all prompts</Button>
         </Link>
       </div>
+      <p className="mt-5 text-sm text-zinc-400">
+        Built with{" "}
+        <span className="text-indigo-600">♥</span>
+        {" "}by{" "}
+        <a
+          href="https://instagram.com/immoebarbar"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="font-semibold text-zinc-600 underline underline-offset-2 hover:text-indigo-600 transition-colors"
+        >
+          Moe Barbar
+        </a>
+      </p>
     </>
   );
 };
