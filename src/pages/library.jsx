@@ -5,8 +5,8 @@ import { useRouter } from "next/router";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   FiSearch, FiCopy, FiBookmark, FiCheck, FiX,
-  FiMenu, FiChevronRight, FiLogOut, FiUser, FiShare2,
-  FiChevronDown, FiFilter,
+  FiMenu, FiLogOut, FiUser, FiShare2,
+  FiChevronDown,
 } from "react-icons/fi";
 import { CATEGORIES } from "@/data/prompts";
 import { useAuth } from "@/lib/auth";
@@ -195,7 +195,7 @@ const GroupedGrid = ({ prompts, onOpen, savedIds, onToggleSave, user }) => {
 };
 
 // ── Sidebar ───────────────────────────────────────────────────────────────────
-const Sidebar = ({ activeCat, onSelect, sidebarOpen, setSidebarOpen, categoryCounts }) => (
+const Sidebar = ({ activeCat, onSelect, activeSub, onSubSelect, sidebarOpen, setSidebarOpen, categoryCounts, subcategories }) => (
   <>
     {sidebarOpen && <div className="fixed inset-0 z-30 bg-black/30 md:hidden" onClick={() => setSidebarOpen(false)} />}
     <aside className={`fixed left-0 top-0 z-40 flex h-full w-64 flex-col border-r-2 border-zinc-200 bg-white transition-transform duration-200 md:static md:translate-x-0 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}>
@@ -206,16 +206,57 @@ const Sidebar = ({ activeCat, onSelect, sidebarOpen, setSidebarOpen, categoryCou
           ✨ All Prompts
         </button>
         <div className="mb-2 mt-4 px-3 text-[10px] font-black uppercase tracking-widest text-zinc-400">Categories</div>
-        {CATEGORIES.map((cat) => (
-          <button key={cat.id} onClick={() => { onSelect(cat.id); setSidebarOpen(false); }}
-            className={`flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors ${activeCat === cat.id ? "bg-indigo-50 font-bold text-indigo-700" : "text-zinc-600 hover:bg-zinc-50"}`}>
-            <span className="text-base">{cat.icon}</span>
-            <span className="flex-1 leading-tight text-left">{cat.label}</span>
-            <span className={`ml-auto shrink-0 rounded-full px-1.5 py-0.5 text-[10px] font-bold tabular-nums ${activeCat === cat.id ? "bg-indigo-100 text-indigo-700" : "bg-zinc-100 text-zinc-400"}`}>
-              {categoryCounts[cat.id] ?? "…"}
-            </span>
-          </button>
-        ))}
+        {CATEGORIES.map((cat) => {
+          const isActive = activeCat === cat.id;
+          const hasSubcats = isActive && subcategories.length > 0;
+          return (
+            <div key={cat.id}>
+              <button
+                onClick={() => { onSelect(cat.id); setSidebarOpen(false); }}
+                className={`flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors ${isActive ? "bg-indigo-50 font-bold text-indigo-700" : "text-zinc-600 hover:bg-zinc-50"}`}
+              >
+                <span className="text-base">{cat.icon}</span>
+                <span className="flex-1 leading-tight text-left">{cat.label}</span>
+                <span className={`ml-auto shrink-0 rounded-full px-1.5 py-0.5 text-[10px] font-bold tabular-nums ${isActive ? "bg-indigo-100 text-indigo-700" : "bg-zinc-100 text-zinc-400"}`}>
+                  {categoryCounts[cat.id] ?? "…"}
+                </span>
+                {hasSubcats && <FiChevronDown size={11} className="shrink-0 text-indigo-400" />}
+              </button>
+
+              {/* Expandable subcategory list */}
+              <AnimatePresence initial={false}>
+                {hasSubcats && (
+                  <motion.div
+                    key="subcats"
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.18 }}
+                    className="overflow-hidden"
+                  >
+                    <div className="mb-1 ml-7 border-l-2 border-indigo-100 pl-2 pt-0.5">
+                      <button
+                        onClick={() => onSubSelect(null)}
+                        className={`flex w-full rounded-md px-2 py-1.5 text-xs font-bold transition-colors ${activeSub === null ? "text-indigo-600" : "text-zinc-400 hover:text-zinc-700"}`}
+                      >
+                        All {cat.label}
+                      </button>
+                      {subcategories.map((sub) => (
+                        <button
+                          key={sub}
+                          onClick={() => onSubSelect(sub)}
+                          className={`flex w-full truncate rounded-md px-2 py-1.5 text-xs transition-colors ${activeSub === sub ? "font-bold text-indigo-600" : "text-zinc-500 hover:text-zinc-900"}`}
+                        >
+                          {sub}
+                        </button>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          );
+        })}
       </div>
     </aside>
   </>
@@ -359,9 +400,12 @@ export default function Library() {
       <Sidebar
         activeCat={activeCat}
         onSelect={handleCatSelect}
+        activeSub={activeSub}
+        onSubSelect={setActiveSub}
         sidebarOpen={sidebarOpen}
         setSidebarOpen={setSidebarOpen}
         categoryCounts={categoryCounts}
+        subcategories={subcategories}
       />
 
       <div className="flex flex-1 flex-col overflow-hidden">
@@ -424,38 +468,6 @@ export default function Library() {
             )}
           </div>
         </header>
-
-        {/* Subcategory filter bar */}
-        <AnimatePresence>
-          {subcategories.length > 0 && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="overflow-hidden border-b-2 border-zinc-200 bg-white"
-            >
-              <div className="flex items-center gap-2 overflow-x-auto px-4 py-2 scrollbar-hide">
-                <FiFilter size={12} className="shrink-0 text-zinc-400" />
-                <button
-                  onClick={() => setActiveSub(null)}
-                  className={`shrink-0 rounded-full px-3 py-1 text-xs font-bold transition-all ${activeSub === null ? "bg-indigo-600 text-white" : "bg-zinc-100 text-zinc-600 hover:bg-zinc-200"}`}
-                >
-                  All
-                </button>
-                {subcategories.map((sub) => (
-                  <button
-                    key={sub}
-                    onClick={() => setActiveSub(activeSub === sub ? null : sub)}
-                    className={`shrink-0 rounded-full px-3 py-1 text-xs font-bold transition-all whitespace-nowrap ${activeSub === sub ? "bg-indigo-600 text-white" : "bg-zinc-100 text-zinc-600 hover:bg-zinc-200"}`}
-                  >
-                    {sub}
-                  </button>
-                ))}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
 
         {/* Content */}
         <main className="flex-1 overflow-y-auto px-4 py-6">
