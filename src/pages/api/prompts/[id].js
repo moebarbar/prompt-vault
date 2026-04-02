@@ -1,26 +1,31 @@
 /**
- * GET /api/prompts/[id]
- * Returns a single prompt by its id.
+ * GET /api/prompts/:id
+ * Returns a single prompt by id.
  */
 
-import { PROMPTS } from "@/data/prompts";
+import { supabaseAdmin } from "@/lib/supabaseAdmin";
 
-export default function handler(req, res) {
+export default async function handler(req, res) {
   if (req.method !== "GET") {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
   const { id } = req.query;
 
-  const allPrompts = Object.entries(PROMPTS).flatMap(([catId, prompts]) =>
-    prompts.map((p) => ({ ...p, catId }))
-  );
+  try {
+    const { data, error } = await supabaseAdmin
+      .from("prompts")
+      .select("*")
+      .eq("id", id)
+      .single();
 
-  const prompt = allPrompts.find((p) => p.id === id);
+    if (error || !data) {
+      return res.status(404).json({ error: "Prompt not found" });
+    }
 
-  if (!prompt) {
-    return res.status(404).json({ error: `Prompt not found: ${id}` });
+    return res.status(200).json({ prompt: data });
+  } catch (err) {
+    console.error("/api/prompts/[id] error:", err.message);
+    return res.status(500).json({ error: "Failed to fetch prompt" });
   }
-
-  return res.status(200).json(prompt);
 }

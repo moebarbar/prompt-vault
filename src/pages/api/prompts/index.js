@@ -1,57 +1,88 @@
 /**
  * GET /api/prompts
- * Returns prompts from the data file.
- * Query params:
- *   ?cat=marketing     — filter by category id
- *   ?search=cold+email — full-text search across title, description, tags
- *   ?sort=popular      — sort by usage count (future: from DB)
+ * Queries prompts from Supabase with full-text search, filtering, and pagination.
  *
- * This route currently serves prompts from the static data file.
- * When you want DB-backed prompts, replace PROMPTS/CATEGORIES imports
- * with Supabase queries (see comments below).
+ * Query params:
+ *   ?cat=marketing       — filter by category_id
+ *   ?sub=Email+Campaigns — filter by subcategory
+ *   ?search=cold+email   — full-text search (Postgres tsvector)
+ *   ?sort=alpha          — sort: relevance (default) | alpha | newest
+ *   ?page=1              — page number (1-indexed)
+ *   ?limit=24            — results per page (default 24)
+ *   ?source=curated      — filter by source: curated | imported | all (default)
  */
 
-import { PROMPTS, CATEGORIES } from "@/data/prompts";
+import { supabaseAdmin } from "@/lib/supabaseAdmin";
+import { CATEGORIES } from "@/data/prompts";
 
-export default function handler(req, res) {
+const DEFAULT_LIMIT = 24;
+
+export default async function handler(req, res) {
   if (req.method !== "GET") {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const { cat, search, sort } = req.query;
+  const { cat, sub, search, sort, source } = req.query;
+  const page = Math.max(1, parseInt(req.query.page) || 1);
+  const limit = Math.min(100, parseInt(req.query.limit) || DEFAULT_LIMIT);
+  const offset = (page - 1) * limit;
 
-  // Flatten all prompts into one array with catId attached
-  let results = Object.entries(PROMPTS).flatMap(([catId, prompts]) =>
-    prompts.map((p) => ({ ...p, catId }))
-  );
-
-  // Filter by category
+  // Validate category if provided
   if (cat) {
     const validCat = CATEGORIES.find((c) => c.id === cat);
     if (!validCat) {
       return res.status(400).json({ error: `Unknown category: ${cat}` });
     }
-    results = results.filter((p) => p.catId === cat);
   }
 
-  // Search filter
-  if (search) {
-    const q = search.toLowerCase();
-    results = results.filter(
-      (p) =>
-        p.title.toLowerCase().includes(q) ||
-        p.description.toLowerCase().includes(q) ||
-        p.tags.some((t) => t.toLowerCase().includes(q))
-    );
-  }
+  try {
+    let query = supabaseAdmin
+      .from("prompts")
+      .select("id, title, description, prompt, category_id, subcategory, tags, model, source", { count: "exact" });
 
-  // Sorting (extend when you add DB-backed usage counts)
-  if (sort === "alpha") {
-    results.sort((a, b) => a.title.localeCompare(b.title));
-  }
+    // Category filter
+    if (cat) query = query.eq("category_id", cat);
 
-  return res.status(200).json({
-    count: results.length,
-    prompts: results,
-  });
+    // Subcategory filter
+    if (sub) query = query.eq("subcategory", sub);
+
+    // Source filter
+    if (source && source !== "all") query = query.eq("source", source);
+
+    // Full-text search — uses the weighted tsvector index
+    if (search && search.trim()) {
+      query = query.textSearch("search_vector", search.trim(), {
+        type: "plain",
+        config: "english",
+      });
+    }
+
+    // Sorting
+    if (sort === "alpha") {
+      query = query.order("title", { ascending: true });
+    } else if (sort === "newest") {
+      query = query.order("created_at", { ascending: false });
+    } else {
+      // Default: curated first, then by id (stable order)
+      query = query.order("source", { ascending: true }).order("id", { ascending: true });
+    }
+
+    // Pagination
+    query = query.range(offset, offset + limit - 1);
+
+    const { data, error, count } = await query;
+
+    if (error) throw error;
+
+    return res.status(200).json({
+      prompts: data || [],
+      total: count || 0,
+      page,
+      limit,
+      hasMore: offset + limit < (count || 0),
+    });
+  } catch (err) {
+    console.error("/api/prompts error:", err.message);
+    return res.status(500).json({ error: "Failed to fetch prompts" });
+  }
 }

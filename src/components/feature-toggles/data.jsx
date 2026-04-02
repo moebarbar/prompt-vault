@@ -1,5 +1,11 @@
 import React from "react";
 import { FiCopy, FiSearch, FiBookmark, FiZap } from "react-icons/fi";
+import {
+  IllustrationBrowse,
+  IllustrationCopy,
+  IllustrationSave,
+  IllustrationSearch,
+} from "../illustrations/Illustrations";
 
 const BrowseComponent = () => (
   <div className="h-full w-full p-4">
@@ -77,6 +83,7 @@ export const data = [
     id: 1,
     title: "Browse",
     Component: BrowseComponent,
+    Illustration: IllustrationBrowse,
     cardTitle: "25 categories, one place",
     cardSubtitle: "Browse by role, industry, or goal. Everything organized so you find exactly what you need in seconds.",
   },
@@ -84,6 +91,7 @@ export const data = [
     id: 2,
     title: "Copy",
     Component: CopyComponent,
+    Illustration: IllustrationCopy,
     cardTitle: "One click. Done.",
     cardSubtitle: "Every prompt is ready to paste directly into ChatGPT, Claude, Gemini, or any AI tool you use.",
   },
@@ -91,6 +99,7 @@ export const data = [
     id: 3,
     title: "Save",
     Component: SaveComponent,
+    Illustration: IllustrationSave,
     cardTitle: "Build your personal prompt library",
     cardSubtitle: "Save your favorite prompts, organize by project, and access them anytime from any device.",
   },
@@ -98,6 +107,7 @@ export const data = [
     id: 4,
     title: "Search",
     Component: SearchComponent,
+    Illustration: IllustrationSearch,
     cardTitle: "Find any prompt instantly",
     cardSubtitle: "Search across all 500+ prompts by keyword, category, or goal. Stop wasting time writing prompts from scratch.",
   },

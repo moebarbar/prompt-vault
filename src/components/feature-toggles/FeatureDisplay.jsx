@@ -7,10 +7,16 @@ export const FeatureDisplay = ({
   cardTitle,
   cardSubtitle,
   Component,
+  illustration: Illus,
 }) => {
   return (
     <div className="grid h-fit w-full grid-cols-1 overflow-hidden rounded-xl border-2 border-zinc-900 bg-white md:h-96 md:grid-cols-12">
-      <div className="col-span-1 flex flex-col justify-between p-8 md:col-span-7 md:p-12">
+      <div className="relative col-span-1 flex flex-col justify-between p-8 md:col-span-7 md:p-12">
+        {Illus && (
+          <div className="absolute right-6 top-6 hidden md:block opacity-90">
+            <Illus className="w-14 rounded-xl" />
+          </div>
+        )}
         <div>
           <AnimatePresence mode="popLayout">
             <motion.div

@@ -1,17 +1,39 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   FiSearch, FiCopy, FiBookmark, FiCheck, FiX,
-  FiMenu, FiChevronRight, FiLogOut, FiUser,
+  FiMenu, FiChevronRight, FiLogOut, FiUser, FiShare2,
+  FiChevronDown, FiFilter,
 } from "react-icons/fi";
-import { CATEGORIES, PROMPTS } from "@/data/prompts";
+import { CATEGORIES } from "@/data/prompts";
 import { useAuth } from "@/lib/auth";
 import { useSavedPrompts } from "@/lib/useSavedPrompts";
 import { font } from "@/fonts";
 import { LogoSmall } from "@/components/navigation/Logo";
+
+const PAGE_SIZE = 24;
+
+// Precompute category map for quick lookups
+const CAT_MAP = Object.fromEntries(CATEGORIES.map((c) => [c.id, c]));
+
+// ── Skeleton Card ─────────────────────────────────────────────────────────────
+const SkeletonCard = () => (
+  <div className="flex flex-col rounded-xl border-2 border-zinc-200 bg-white p-5 animate-pulse">
+    <div className="mb-3 flex items-start justify-between gap-2">
+      <div className="h-4 w-2/3 rounded bg-zinc-200" />
+      <div className="h-6 w-16 rounded-lg bg-zinc-200" />
+    </div>
+    <div className="mb-2 h-3 w-full rounded bg-zinc-100" />
+    <div className="mb-4 h-3 w-4/5 rounded bg-zinc-100" />
+    <div className="mt-auto flex items-center gap-2">
+      <div className="h-5 w-14 rounded-full bg-zinc-100" />
+      <div className="h-5 w-14 rounded-full bg-zinc-100" />
+    </div>
+  </div>
+);
 
 // ── Prompt Card ───────────────────────────────────────────────────────────────
 const PromptCard = ({ prompt, onOpen, savedIds, onToggleSave, user }) => {
@@ -28,7 +50,7 @@ const PromptCard = ({ prompt, onOpen, savedIds, onToggleSave, user }) => {
   const handleSave = (e) => {
     e.stopPropagation();
     if (!user) { alert("Sign up free to save prompts!"); return; }
-    onToggleSave(prompt.id, prompt.catId);
+    onToggleSave(prompt.id, prompt.category_id);
   };
 
   return (
@@ -42,7 +64,7 @@ const PromptCard = ({ prompt, onOpen, savedIds, onToggleSave, user }) => {
       onClick={() => onOpen(prompt)}
     >
       <div className="mb-3 flex items-start justify-between gap-2">
-        <h3 className="text-sm font-bold leading-snug">{prompt.title}</h3>
+        <h3 className="text-sm font-bold leading-snug line-clamp-2">{prompt.title}</h3>
         <div className="flex shrink-0 items-center gap-1">
           <button onClick={handleSave} title={isSaved ? "Unsave" : "Save"}
             className={`flex items-center justify-center rounded-lg p-1.5 transition-all ${isSaved ? "text-indigo-600 hover:bg-indigo-50" : "text-zinc-300 hover:text-indigo-500 hover:bg-indigo-50"}`}>
@@ -58,7 +80,7 @@ const PromptCard = ({ prompt, onOpen, savedIds, onToggleSave, user }) => {
       <p className="mb-4 text-xs leading-relaxed text-zinc-500 line-clamp-2">{prompt.description}</p>
       <div className="mt-auto flex items-center justify-between">
         <div className="flex flex-wrap gap-1">
-          {prompt.tags.slice(0, 2).map((tag) => (
+          {(prompt.tags || []).slice(0, 2).map((tag) => (
             <span key={tag} className="rounded-full bg-indigo-50 px-2 py-0.5 text-[10px] font-semibold text-indigo-600">{tag}</span>
           ))}
         </div>
@@ -71,6 +93,7 @@ const PromptCard = ({ prompt, onOpen, savedIds, onToggleSave, user }) => {
 // ── Prompt Modal ──────────────────────────────────────────────────────────────
 const PromptModal = ({ prompt, onClose, savedIds, onToggleSave, user }) => {
   const [copied, setCopied] = useState(false);
+  const [shared, setShared] = useState(false);
   const isSaved = savedIds.has(prompt.id);
 
   const handleCopy = () => {
@@ -79,9 +102,16 @@ const PromptModal = ({ prompt, onClose, savedIds, onToggleSave, user }) => {
     setTimeout(() => setCopied(false), 2500);
   };
 
+  const handleShare = () => {
+    const url = `${window.location.origin}/library?cat=${prompt.category_id}&prompt=${prompt.id}`;
+    navigator.clipboard.writeText(url);
+    setShared(true);
+    setTimeout(() => setShared(false), 2000);
+  };
+
   const handleSave = () => {
     if (!user) { alert("Sign up free to save prompts!"); return; }
-    onToggleSave(prompt.id, prompt.catId);
+    onToggleSave(prompt.id, prompt.category_id);
   };
 
   useEffect(() => {
@@ -100,7 +130,7 @@ const PromptModal = ({ prompt, onClose, savedIds, onToggleSave, user }) => {
       >
         <button onClick={onClose} className="absolute right-4 top-4 rounded-lg p-1.5 text-zinc-400 hover:bg-zinc-100"><FiX size={18} /></button>
         <div className="mb-2 flex flex-wrap gap-1">
-          {prompt.tags.map((tag) => (
+          {(prompt.tags || []).map((tag) => (
             <span key={tag} className="rounded-full bg-indigo-50 px-2 py-0.5 text-[10px] font-bold text-indigo-600">{tag}</span>
           ))}
         </div>
@@ -120,6 +150,10 @@ const PromptModal = ({ prompt, onClose, savedIds, onToggleSave, user }) => {
             <FiBookmark size={16} fill={isSaved ? "currentColor" : "none"} />
             {isSaved ? "Saved" : "Save"}
           </button>
+          <button onClick={handleShare} title="Copy shareable link"
+            className={`flex items-center justify-center rounded-xl border-2 px-3 py-3 text-sm font-bold transition-all ${shared ? "border-green-400 bg-green-50 text-green-600" : "border-zinc-200 text-zinc-600 hover:border-indigo-400"}`}>
+            {shared ? <FiCheck size={16} /> : <FiShare2 size={16} />}
+          </button>
         </div>
         <p className="mt-3 text-center text-xs text-zinc-400">Works with: {prompt.model}</p>
       </motion.div>
@@ -128,7 +162,7 @@ const PromptModal = ({ prompt, onClose, savedIds, onToggleSave, user }) => {
 };
 
 // ── Sidebar ───────────────────────────────────────────────────────────────────
-const Sidebar = ({ activeCat, onSelect, sidebarOpen, setSidebarOpen }) => (
+const Sidebar = ({ activeCat, onSelect, sidebarOpen, setSidebarOpen, categoryCounts }) => (
   <>
     {sidebarOpen && <div className="fixed inset-0 z-30 bg-black/30 md:hidden" onClick={() => setSidebarOpen(false)} />}
     <aside className={`fixed left-0 top-0 z-40 flex h-full w-64 flex-col border-r-2 border-zinc-200 bg-white transition-transform duration-200 md:static md:translate-x-0 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}>
@@ -143,8 +177,10 @@ const Sidebar = ({ activeCat, onSelect, sidebarOpen, setSidebarOpen }) => (
           <button key={cat.id} onClick={() => { onSelect(cat.id); setSidebarOpen(false); }}
             className={`flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors ${activeCat === cat.id ? "bg-indigo-50 font-bold text-indigo-700" : "text-zinc-600 hover:bg-zinc-50"}`}>
             <span className="text-base">{cat.icon}</span>
-            <span className="leading-tight">{cat.label}</span>
-            {activeCat === cat.id && <FiChevronRight className="ml-auto shrink-0" size={14} />}
+            <span className="flex-1 leading-tight text-left">{cat.label}</span>
+            <span className={`ml-auto shrink-0 rounded-full px-1.5 py-0.5 text-[10px] font-bold tabular-nums ${activeCat === cat.id ? "bg-indigo-100 text-indigo-700" : "bg-zinc-100 text-zinc-400"}`}>
+              {categoryCounts[cat.id] ?? "…"}
+            </span>
           </button>
         ))}
       </div>
@@ -157,15 +193,115 @@ export default function Library() {
   const router = useRouter();
   const { user, signOut } = useAuth();
   const { savedIds, toggleSave } = useSavedPrompts(user);
+
   const [activeCat, setActiveCat] = useState(null);
+  const [activeSub, setActiveSub] = useState(null);
   const [search, setSearch] = useState("");
+  const [sort, setSort] = useState("relevance");
   const [selectedPrompt, setSelectedPrompt] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showSavedOnly, setShowSavedOnly] = useState(false);
 
+  // Data state
+  const [prompts, setPrompts] = useState([]);
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [subcategories, setSubcategories] = useState([]);
+  const [categoryCounts, setCategoryCounts] = useState({});
+
+  const searchDebounce = useRef(null);
+  const savedIdsRef = useRef(savedIds);
+  useEffect(() => { savedIdsRef.current = savedIds; }, [savedIds]);
+
+  // Load category counts once
   useEffect(() => {
-    if (router.query.cat) setActiveCat(router.query.cat);
-  }, [router.query.cat]);
+    fetch("/api/prompts/categories")
+      .then((r) => r.json())
+      .then((data) => {
+        const map = {};
+        (data.categories || []).forEach((c) => { map[c.id] = c.promptCount; });
+        setCategoryCounts(map);
+      })
+      .catch(() => {});
+  }, []);
+
+  // Sync URL → state on mount
+  useEffect(() => {
+    if (router.isReady) {
+      if (router.query.cat) setActiveCat(router.query.cat);
+      if (router.query.prompt) {
+        // Auto-open a shared prompt
+        fetch(`/api/prompts/${router.query.prompt}`)
+          .then((r) => r.json())
+          .then((data) => { if (data.prompt) setSelectedPrompt(data.prompt); })
+          .catch(() => {});
+      }
+    }
+  }, [router.isReady]);
+
+  // Load subcategories when category changes
+  useEffect(() => {
+    setActiveSub(null);
+    setSubcategories([]);
+    if (!activeCat) return;
+    fetch(`/api/prompts/subcategories?cat=${activeCat}`)
+      .then((r) => r.json())
+      .then((data) => setSubcategories(data.subcategories || []))
+      .catch(() => {});
+  }, [activeCat]);
+
+  // Main fetch — reset to page 1 whenever filters change
+  const fetchPrompts = useCallback(async (opts = {}) => {
+    const { append = false, pageNum = 1 } = opts;
+
+    if (!append) setLoading(true);
+    else setLoadingMore(true);
+
+    try {
+      const params = new URLSearchParams();
+      if (activeCat) params.set("cat", activeCat);
+      if (activeSub) params.set("sub", activeSub);
+      if (search.trim()) params.set("search", search.trim());
+      if (sort !== "relevance") params.set("sort", sort);
+      params.set("page", pageNum);
+      params.set("limit", PAGE_SIZE);
+
+      const res = await fetch(`/api/prompts?${params}`);
+      const data = await res.json();
+
+      if (append) {
+        setPrompts((prev) => [...prev, ...(data.prompts || [])]);
+      } else {
+        setPrompts(data.prompts || []);
+      }
+      setTotal(data.total || 0);
+      setHasMore(data.hasMore || false);
+      setPage(pageNum);
+    } catch (err) {
+      console.error("fetch prompts error:", err);
+    } finally {
+      setLoading(false);
+      setLoadingMore(false);
+    }
+  }, [activeCat, activeSub, search, sort]);
+
+  // Re-fetch when filters change (debounce search)
+  useEffect(() => {
+    if (searchDebounce.current) clearTimeout(searchDebounce.current);
+    searchDebounce.current = setTimeout(() => {
+      fetchPrompts({ pageNum: 1 });
+    }, search ? 350 : 0);
+    return () => clearTimeout(searchDebounce.current);
+  }, [activeCat, activeSub, search, sort, fetchPrompts]);
+
+  // Load more
+  const loadMore = () => {
+    if (!hasMore || loadingMore) return;
+    fetchPrompts({ append: true, pageNum: page + 1 });
+  };
 
   const handleCatSelect = (catId) => {
     setActiveCat(catId);
@@ -173,35 +309,27 @@ export default function Library() {
     router.push(catId ? `/library?cat=${catId}` : "/library", undefined, { shallow: true });
   };
 
-  const allPrompts = useMemo(() =>
-    Object.entries(PROMPTS).flatMap(([catId, prompts]) => prompts.map((p) => ({ ...p, catId }))),
-    []
-  );
+  const activeCatData = activeCat ? CAT_MAP[activeCat] : null;
 
-  const filteredPrompts = useMemo(() => {
-    let list = activeCat ? allPrompts.filter((p) => p.catId === activeCat) : allPrompts;
-    if (showSavedOnly) list = list.filter((p) => savedIds.has(p.id));
-    if (search.trim()) {
-      const q = search.toLowerCase();
-      list = list.filter((p) =>
-        p.title.toLowerCase().includes(q) ||
-        p.description.toLowerCase().includes(q) ||
-        p.tags.some((t) => t.toLowerCase().includes(q))
-      );
-    }
-    return list;
-  }, [activeCat, search, allPrompts, showSavedOnly, savedIds]);
-
-  const activeCatData = CATEGORIES.find((c) => c.id === activeCat);
+  // For saved-only view, filter client-side
+  const displayedPrompts = showSavedOnly
+    ? prompts.filter((p) => savedIds.has(p.id))
+    : prompts;
 
   return (
     <div style={font.style} className="flex h-screen overflow-hidden bg-zinc-50">
       <Head>
         <title>{activeCatData ? `${activeCatData.label} Prompts — PromptVault` : "Prompt Library — PromptVault"}</title>
-        <meta name="description" content="Browse 500+ expert copy-paste prompts for marketing, sales, coding, and more." />
+        <meta name="description" content="Browse 20,000+ expert copy-paste prompts for marketing, sales, coding, and more." />
       </Head>
 
-      <Sidebar activeCat={activeCat} onSelect={handleCatSelect} sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+      <Sidebar
+        activeCat={activeCat}
+        onSelect={handleCatSelect}
+        sidebarOpen={sidebarOpen}
+        setSidebarOpen={setSidebarOpen}
+        categoryCounts={categoryCounts}
+      />
 
       <div className="flex flex-1 flex-col overflow-hidden">
         {/* Header */}
@@ -211,10 +339,30 @@ export default function Library() {
           </button>
           <div className="flex flex-1 items-center gap-2 rounded-xl border-2 border-zinc-200 bg-zinc-50 px-3 py-1.5 focus-within:border-indigo-400 transition-colors">
             <FiSearch className="shrink-0 text-zinc-400" size={15} />
-            <input type="text" value={search} onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search 500+ prompts..." className="flex-1 bg-transparent text-sm outline-none placeholder:text-zinc-400" />
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search 20,000+ prompts..."
+              className="flex-1 bg-transparent text-sm outline-none placeholder:text-zinc-400"
+            />
             {search && <button onClick={() => setSearch("")} className="text-zinc-400 hover:text-zinc-700"><FiX size={14} /></button>}
           </div>
+
+          {/* Sort */}
+          <div className="relative hidden sm:block">
+            <select
+              value={sort}
+              onChange={(e) => setSort(e.target.value)}
+              className="appearance-none rounded-xl border-2 border-zinc-200 bg-white pl-3 pr-8 py-1.5 text-xs font-bold text-zinc-600 outline-none hover:border-zinc-300 cursor-pointer"
+            >
+              <option value="relevance">Relevance</option>
+              <option value="alpha">A – Z</option>
+              <option value="newest">Newest</option>
+            </select>
+            <FiChevronDown size={12} className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-400" />
+          </div>
+
           {user && (
             <button onClick={() => setShowSavedOnly((v) => !v)}
               className={`flex shrink-0 items-center gap-1.5 rounded-xl border-2 px-3 py-1.5 text-xs font-bold transition-all ${showSavedOnly ? "border-indigo-500 bg-indigo-50 text-indigo-600" : "border-zinc-200 text-zinc-500 hover:border-indigo-300"}`}>
@@ -222,6 +370,7 @@ export default function Library() {
               <span className="hidden sm:block">Saved</span>
             </button>
           )}
+
           <div className="flex shrink-0 items-center gap-2">
             {user ? (
               <>
@@ -243,45 +392,135 @@ export default function Library() {
           </div>
         </header>
 
+        {/* Subcategory filter bar */}
+        <AnimatePresence>
+          {subcategories.length > 0 && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="overflow-hidden border-b-2 border-zinc-200 bg-white"
+            >
+              <div className="flex items-center gap-2 overflow-x-auto px-4 py-2 scrollbar-hide">
+                <FiFilter size={12} className="shrink-0 text-zinc-400" />
+                <button
+                  onClick={() => setActiveSub(null)}
+                  className={`shrink-0 rounded-full px-3 py-1 text-xs font-bold transition-all ${activeSub === null ? "bg-indigo-600 text-white" : "bg-zinc-100 text-zinc-600 hover:bg-zinc-200"}`}
+                >
+                  All
+                </button>
+                {subcategories.map((sub) => (
+                  <button
+                    key={sub}
+                    onClick={() => setActiveSub(activeSub === sub ? null : sub)}
+                    className={`shrink-0 rounded-full px-3 py-1 text-xs font-bold transition-all whitespace-nowrap ${activeSub === sub ? "bg-indigo-600 text-white" : "bg-zinc-100 text-zinc-600 hover:bg-zinc-200"}`}
+                  >
+                    {sub}
+                  </button>
+                ))}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {/* Content */}
         <main className="flex-1 overflow-y-auto px-4 py-6">
+          {/* Page heading */}
           <div className="mb-6">
             <h1 className="text-2xl font-black">
               {showSavedOnly ? "🔖 Saved Prompts" : activeCatData ? `${activeCatData.icon} ${activeCatData.label}` : search ? `Results for "${search}"` : "✨ All Prompts"}
             </h1>
-            <p className="mt-1 text-sm text-zinc-500">
-              {showSavedOnly ? "Your bookmarked prompts" : activeCatData?.description || "Browse all prompts across every category"}
-              <span className="ml-2 font-semibold text-indigo-600">{filteredPrompts.length} prompt{filteredPrompts.length !== 1 ? "s" : ""}</span>
-            </p>
+            <div className="mt-1 flex flex-wrap items-center gap-2">
+              <p className="text-sm text-zinc-500">
+                {showSavedOnly ? "Your bookmarked prompts" : activeCatData?.description || "Browse all prompts across every category"}
+              </p>
+              {!loading && (
+                <span className="font-semibold text-sm text-indigo-600">
+                  {showSavedOnly ? displayedPrompts.length : total.toLocaleString()} prompt{total !== 1 ? "s" : ""}
+                </span>
+              )}
+              {/* Active filters */}
+              {activeSub && (
+                <button
+                  onClick={() => setActiveSub(null)}
+                  className="flex items-center gap-1 rounded-full bg-indigo-100 px-2 py-0.5 text-xs font-bold text-indigo-700 hover:bg-indigo-200"
+                >
+                  {activeSub} <FiX size={10} />
+                </button>
+              )}
+            </div>
           </div>
 
-          {filteredPrompts.length === 0 ? (
+          {/* Grid */}
+          {loading ? (
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+              {Array.from({ length: 12 }).map((_, i) => <SkeletonCard key={i} />)}
+            </div>
+          ) : displayedPrompts.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-24 text-center">
               <span className="mb-3 text-5xl">{showSavedOnly ? "🔖" : "🔍"}</span>
               <h3 className="text-lg font-bold">{showSavedOnly ? "No saved prompts yet" : "No prompts found"}</h3>
-              <p className="mt-1 text-sm text-zinc-500">{showSavedOnly ? "Click the bookmark on any prompt to save it" : "Try a different search or category"}</p>
-              <button onClick={() => { setSearch(""); setActiveCat(null); setShowSavedOnly(false); }}
-                className="mt-4 rounded-xl bg-indigo-600 px-4 py-2 text-sm font-bold text-white hover:bg-indigo-700">
+              <p className="mt-1 text-sm text-zinc-500">
+                {showSavedOnly ? "Click the bookmark on any prompt to save it" : "Try a different search or category"}
+              </p>
+              <button
+                onClick={() => { setSearch(""); setActiveCat(null); setActiveSub(null); setShowSavedOnly(false); }}
+                className="mt-4 rounded-xl bg-indigo-600 px-4 py-2 text-sm font-bold text-white hover:bg-indigo-700"
+              >
                 Browse all prompts
               </button>
             </div>
           ) : (
-            <motion.div layout className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
-              <AnimatePresence>
-                {filteredPrompts.map((prompt) => (
-                  <PromptCard key={prompt.id} prompt={prompt} onOpen={setSelectedPrompt}
-                    savedIds={savedIds} onToggleSave={toggleSave} user={user} />
-                ))}
-              </AnimatePresence>
-            </motion.div>
+            <>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                <AnimatePresence>
+                  {displayedPrompts.map((prompt) => (
+                    <PromptCard
+                      key={prompt.id}
+                      prompt={prompt}
+                      onOpen={setSelectedPrompt}
+                      savedIds={savedIds}
+                      onToggleSave={toggleSave}
+                      user={user}
+                    />
+                  ))}
+                </AnimatePresence>
+              </div>
+
+              {/* Load more */}
+              {hasMore && !showSavedOnly && (
+                <div className="mt-8 flex justify-center">
+                  <button
+                    onClick={loadMore}
+                    disabled={loadingMore}
+                    className="rounded-xl border-2 border-zinc-200 px-6 py-3 text-sm font-bold text-zinc-600 transition-all hover:border-indigo-400 hover:text-indigo-600 disabled:opacity-50"
+                  >
+                    {loadingMore ? "Loading…" : `Load more prompts`}
+                  </button>
+                </div>
+              )}
+
+              {/* Skeleton rows while loading more */}
+              {loadingMore && (
+                <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                  {Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={`more-${i}`} />)}
+                </div>
+              )}
+            </>
           )}
         </main>
       </div>
 
       <AnimatePresence>
         {selectedPrompt && (
-          <PromptModal prompt={selectedPrompt} onClose={() => setSelectedPrompt(null)}
-            savedIds={savedIds} onToggleSave={toggleSave} user={user} />
+          <PromptModal
+            prompt={selectedPrompt}
+            onClose={() => setSelectedPrompt(null)}
+            savedIds={savedIds}
+            onToggleSave={toggleSave}
+            user={user}
+          />
         )}
       </AnimatePresence>
     </div>

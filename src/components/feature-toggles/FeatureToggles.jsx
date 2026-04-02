@@ -37,6 +37,7 @@ export const FeatureToggles = () => {
               cardTitle={el.cardTitle}
               cardSubtitle={el.cardSubtitle}
               Component={el.Component}
+              illustration={el.Illustration}
             />
           </div>
         </div>
