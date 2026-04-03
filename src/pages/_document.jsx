@@ -22,14 +22,15 @@ export default function Document() {
         {/* Open Graph defaults */}
         <meta property="og:type" content="website" />
         <meta property="og:site_name" content="PromptVault" />
-        <meta property="og:image" content="https://www.promptvault.io/og-image.png" />
+        <meta property="og:image" content="https://www.promptvault.io/api/og" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
+        <meta property="og:image:type" content="image/png" />
 
         {/* Twitter Card defaults */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:site" content="@promptvault" />
-        <meta name="twitter:image" content="https://www.promptvault.io/og-image.png" />
+        <meta name="twitter:image" content="https://www.promptvault.io/api/og" />
       </Head>
       <body>
         <Main />

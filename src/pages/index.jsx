@@ -145,8 +145,10 @@ export default function Home() {
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
         <meta property="og:url" content={SITE_URL} />
+        <meta property="og:image" content={`${SITE_URL}/api/og?title=8%2C000%2B+Professional+AI+Prompts&sub=Copy.+Paste.+Get+real+results.`} />
         <meta name="twitter:title" content={title} />
         <meta name="twitter:description" content={description} />
+        <meta name="twitter:image" content={`${SITE_URL}/api/og?title=8%2C000%2B+Professional+AI+Prompts&sub=Copy.+Paste.+Get+real+results.`} />
         {SCHEMAS.map((s, i) => (
           <script key={i} type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(s) }} />
         ))}

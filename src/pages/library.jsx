@@ -540,6 +540,22 @@ export default function Library() {
         />
         <meta property="og:title" content={activeCatData ? `${activeCatData.label} AI Prompts | PromptVault` : "AI Prompt Library | PromptVault"} />
         <meta property="og:url" content={`https://www.promptvault.io/library${activeCat ? `?cat=${activeCat}` : ""}`} />
+        {(() => {
+          const ogTitle = activeCatData
+            ? `${activeCatData.icon} ${activeCatData.label} AI Prompts`
+            : "8,000+ Professional AI Prompts";
+          const ogSub = activeCatData
+            ? activeCatData.description
+            : "Copy. Paste. Get real results.";
+          const ogCategory = activeCatData ? activeCatData.label : null;
+          const ogUrl = `https://www.promptvault.io/api/og?title=${encodeURIComponent(ogTitle)}&sub=${encodeURIComponent(ogSub)}${ogCategory ? `&category=${encodeURIComponent(ogCategory)}` : ""}`;
+          return (
+            <>
+              <meta property="og:image" content={ogUrl} />
+              <meta name="twitter:image" content={ogUrl} />
+            </>
+          );
+        })()}
       </Head>
 
       <Sidebar
