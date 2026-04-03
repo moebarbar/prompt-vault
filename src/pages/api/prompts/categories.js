@@ -4,6 +4,7 @@
  * Uses parallel count queries — one per category — to avoid fetching all rows.
  */
 
+import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
 import { CATEGORIES } from "@/data/prompts";
 
@@ -11,6 +12,10 @@ export default async function handler(req, res) {
   if (req.method !== "GET") {
     return res.status(405).json({ error: "Method not allowed" });
   }
+
+  const supabase = createServerSupabaseClient({ req, res });
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) return res.status(401).json({ error: "Unauthorized" });
 
   // Cache for 60 seconds
   res.setHeader("Cache-Control", "s-maxage=60, stale-while-revalidate=300");

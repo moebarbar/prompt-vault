@@ -377,8 +377,27 @@ const Sidebar = ({ activeCat, onSelect, activeSub, onSubSelect, sidebarOpen, set
 // ── Main Page ─────────────────────────────────────────────────────────────────
 export default function Library() {
   const router = useRouter();
-  const { user, signOut } = useAuth();
+  const { user, loading: authLoading, signOut } = useAuth();
   const { savedIds, toggleSave } = useSavedPrompts(user);
+
+  // Auth gate — redirect unauthenticated users to signup
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.replace("/signup");
+    }
+  }, [authLoading, user, router]);
+
+  // Show fullscreen loader while auth resolves or redirect is in progress
+  if (authLoading || !user) {
+    return (
+      <div style={font.style} className="flex h-screen items-center justify-center bg-zinc-50">
+        <div className="flex flex-col items-center gap-4">
+          <div className="h-10 w-10 animate-spin rounded-full border-4 border-zinc-200 border-t-indigo-600" />
+          <p className="text-sm font-bold text-zinc-400">Loading your vault…</p>
+        </div>
+      </div>
+    );
+  }
 
   const [activeCat, setActiveCat] = useState(null);
   const [activeSub, setActiveSub] = useState(null);
