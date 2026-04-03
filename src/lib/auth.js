@@ -1,6 +1,8 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { supabase } from "./supabase";
 
+const ADMIN_EMAIL = "moebarbar@hotmail.com";
+
 const AuthContext = createContext({});
 
 export const AuthProvider = ({ children }) => {
@@ -14,7 +16,12 @@ export const AuthProvider = ({ children }) => {
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
+      const u = session?.user ?? null;
+      setUser(u);
+      // Auto-promote admin email on every sign-in (server sets app_metadata)
+      if (u?.email === ADMIN_EMAIL && u?.app_metadata?.role !== "admin") {
+        fetch("/api/admin/promote", { method: "POST" }).catch(() => {});
+      }
     });
 
     return () => subscription.unsubscribe();
@@ -42,8 +49,10 @@ export const AuthProvider = ({ children }) => {
     await supabase.auth.signOut();
   };
 
+  const isAdmin = user?.email === ADMIN_EMAIL;
+
   return (
-    <AuthContext.Provider value={{ user, loading, signUp, signIn, signInWithGoogle, signOut }}>
+    <AuthContext.Provider value={{ user, loading, isAdmin, signUp, signIn, signInWithGoogle, signOut }}>
       {children}
     </AuthContext.Provider>
   );
