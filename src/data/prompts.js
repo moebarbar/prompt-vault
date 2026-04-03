@@ -27,6 +27,10 @@ export const CATEGORIES = [
   { id: "dataanalysis", label: "Data Analysis", icon: "📈", description: "Turn raw data into insights — clean, analyze, visualize, and communicate findings" },
   { id: "marketresearch", label: "Market Research", icon: "🔭", description: "Validate ideas, size markets, and understand customers before you build or launch" },
   { id: "videogen", label: "Video Gen", icon: "🎬", description: "Sora, Runway, Kling, and Pika prompt frameworks for AI-generated video" },
+  { id: "freelancing", label: "Freelancing", icon: "💻", description: "Win clients, price your work, and manage projects as a freelancer" },
+  { id: "dropshipping", label: "Dropshipping", icon: "📦", description: "Product research, ads, branding, and scaling for dropshipping stores" },
+  { id: "emaillist", label: "Email List", icon: "📬", description: "Build, grow, and monetize your email list with proven frameworks" },
+  { id: "affiliate", label: "Affiliate Marketing", icon: "🤝", description: "Build, grow, and scale an affiliate marketing income stream" },
 ];
 
 export const PROMPTS = {
