@@ -195,15 +195,33 @@ const GroupedGrid = ({ prompts, onOpen, savedIds, onToggleSave, user }) => {
 };
 
 // ── Sidebar ───────────────────────────────────────────────────────────────────
-const Sidebar = ({ activeCat, onSelect, activeSub, onSubSelect, sidebarOpen, setSidebarOpen, categoryCounts, subcategories }) => (
+const Sidebar = ({ activeCat, onSelect, activeSub, onSubSelect, sidebarOpen, setSidebarOpen, categoryCounts, subcategories }) => {
+  const grandTotal = Object.values(categoryCounts).reduce((a, b) => a + b, 0);
+
+  return (
   <>
     {sidebarOpen && <div className="fixed inset-0 z-30 bg-black/30 md:hidden" onClick={() => setSidebarOpen(false)} />}
     <aside className={`fixed left-0 top-0 z-40 flex h-full w-64 flex-col border-r-2 border-zinc-200 bg-white transition-transform duration-200 md:static md:translate-x-0 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}>
       <div className="flex h-14 items-center border-b-2 border-zinc-200 px-4"><LogoSmall /></div>
+
+      {/* Grand total stat */}
+      <div className="border-b-2 border-zinc-100 bg-indigo-50 px-4 py-3">
+        <p className="text-[10px] font-black uppercase tracking-widest text-indigo-400">Total Prompts</p>
+        <p className="text-2xl font-black text-indigo-600 tabular-nums">
+          {grandTotal > 0 ? grandTotal.toLocaleString() : "…"}
+        </p>
+        <p className="text-[10px] text-indigo-400">{CATEGORIES.length} categories</p>
+      </div>
+
       <div className="flex-1 overflow-y-auto px-3 py-4">
         <button onClick={() => { onSelect(null); setSidebarOpen(false); }}
           className={`mb-1 flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm font-bold transition-colors ${activeCat === null ? "bg-indigo-600 text-white" : "text-zinc-600 hover:bg-zinc-100"}`}>
-          ✨ All Prompts
+          <span className="flex-1 text-left">✨ All Prompts</span>
+          {grandTotal > 0 && (
+            <span className={`shrink-0 rounded-full px-1.5 py-0.5 text-[10px] font-bold tabular-nums ${activeCat === null ? "bg-indigo-500 text-white" : "bg-zinc-100 text-zinc-400"}`}>
+              {grandTotal.toLocaleString()}
+            </span>
+          )}
         </button>
         <div className="mb-2 mt-4 px-3 text-[10px] font-black uppercase tracking-widest text-zinc-400">Categories</div>
         {CATEGORIES.map((cat) => {
@@ -260,7 +278,8 @@ const Sidebar = ({ activeCat, onSelect, activeSub, onSubSelect, sidebarOpen, set
       </div>
     </aside>
   </>
-);
+  );
+};
 
 // ── Main Page ─────────────────────────────────────────────────────────────────
 export default function Library() {
@@ -471,20 +490,52 @@ export default function Library() {
 
         {/* Content */}
         <main className="flex-1 overflow-y-auto px-4 py-6">
+
+          {/* ── Global stats bar (only on All Prompts view) ── */}
+          {!activeCat && !search && !showSavedOnly && Object.keys(categoryCounts).length > 0 && (
+            <div className="mb-6 rounded-2xl border-2 border-zinc-200 bg-white p-5">
+              <div className="mb-4 flex items-baseline gap-3">
+                <span className="text-4xl font-black text-zinc-900 tabular-nums">
+                  {Object.values(categoryCounts).reduce((a, b) => a + b, 0).toLocaleString()}
+                </span>
+                <span className="text-base font-bold text-zinc-400">expert prompts across {CATEGORIES.length} categories</span>
+              </div>
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+                {CATEGORIES.map((cat) => (
+                  <button
+                    key={cat.id}
+                    onClick={() => handleCatSelect(cat.id)}
+                    className="flex items-center gap-2 rounded-xl border-2 border-zinc-100 bg-zinc-50 px-3 py-2 text-left transition-all hover:border-indigo-300 hover:bg-indigo-50"
+                  >
+                    <span className="text-lg leading-none">{cat.icon}</span>
+                    <div className="min-w-0">
+                      <p className="truncate text-xs font-bold text-zinc-700">{cat.label}</p>
+                      <p className="text-[11px] font-black text-indigo-600 tabular-nums">
+                        {categoryCounts[cat.id] != null ? categoryCounts[cat.id].toLocaleString() : "…"}
+                      </p>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Page heading */}
           <div className="mb-6">
-            <h1 className="text-2xl font-black">
-              {showSavedOnly ? "🔖 Saved Prompts" : activeCatData ? `${activeCatData.icon} ${activeCatData.label}` : search ? `Results for "${search}"` : "✨ All Prompts"}
-            </h1>
+            <div className="flex items-baseline gap-3">
+              <h1 className="text-2xl font-black">
+                {showSavedOnly ? "🔖 Saved Prompts" : activeCatData ? `${activeCatData.icon} ${activeCatData.label}` : search ? `Results for "${search}"` : "✨ All Prompts"}
+              </h1>
+              {!loading && !showSavedOnly && (
+                <span className="rounded-full bg-indigo-100 px-2.5 py-0.5 text-sm font-black text-indigo-600 tabular-nums">
+                  {total.toLocaleString()}
+                </span>
+              )}
+            </div>
             <div className="mt-1 flex flex-wrap items-center gap-2">
               <p className="text-sm text-zinc-500">
                 {showSavedOnly ? "Your bookmarked prompts" : activeCatData?.description || "Browse all prompts across every category"}
               </p>
-              {!loading && (
-                <span className="font-semibold text-sm text-indigo-600">
-                  {showSavedOnly ? displayedPrompts.length : total.toLocaleString()} prompt{total !== 1 ? "s" : ""}
-                </span>
-              )}
               {/* Active filters */}
               {activeSub && (
                 <button
