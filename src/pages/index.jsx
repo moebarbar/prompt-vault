@@ -84,8 +84,8 @@ const faqSchema = {
 
 const CategoriesGrid = () => (
   <section className="mx-auto max-w-7xl px-2 md:px-4">
-    <div className="mb-8 text-center">
-      <h2 className="text-3xl font-black md:text-4xl">AI prompts for every use case</h2>
+    <div className="mb-10 text-center">
+      <h2 className="text-3xl font-black md:text-5xl">AI prompts for every use case</h2>
       <p className="mt-3 text-lg text-zinc-500">
         {CATEGORIES.length} professional categories. Thousands of ready-to-use ChatGPT &amp; Claude prompts.
       </p>
@@ -95,11 +95,14 @@ const CategoriesGrid = () => (
         <Link
           key={cat.id}
           href={`/library?cat=${cat.id}`}
-          className="group flex flex-col items-start rounded-xl border-2 border-zinc-200 bg-white p-4 transition-all hover:-translate-y-0.5 hover:border-indigo-500 hover:shadow-md"
           aria-label={`Browse ${cat.label} AI prompts`}
+          className="group flex flex-col gap-3 rounded-2xl border-2 border-zinc-900 bg-white p-4 shadow-[3px_3px_0px_#18181b] transition-all duration-150 hover:-translate-y-1 hover:shadow-[5px_5px_0px_#4f46e5] active:translate-y-0 active:shadow-[2px_2px_0px_#18181b]"
         >
-          <span className="mb-2 text-2xl" aria-hidden="true">{cat.icon}</span>
-          <span className="text-sm font-bold leading-tight">{cat.label}</span>
+          <span className="text-3xl leading-none" aria-hidden="true">{cat.icon}</span>
+          <div>
+            <p className="text-sm font-black leading-tight text-zinc-900">{cat.label}</p>
+            <p className="mt-1 text-[11px] leading-relaxed text-zinc-400 line-clamp-2">{cat.description}</p>
+          </div>
         </Link>
       ))}
     </div>
