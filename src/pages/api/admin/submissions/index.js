@@ -1,24 +1,27 @@
 /**
- * GET /api/bundles
- * Returns all published bundles with prompt count.
- * Requires authenticated session.
+ * GET /api/admin/submissions
+ * Returns all bundles grouped by status (pending, published, rejected).
+ * Admin-only.
  */
 import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
+
+const ADMIN_EMAIL = "moebarbar@hotmail.com";
 
 export default async function handler(req, res) {
   if (req.method !== "GET") return res.status(405).end();
 
   const supabase = createServerSupabaseClient({ req, res });
   const { data: { session } } = await supabase.auth.getSession();
-  if (!session) return res.status(401).json({ error: "Unauthorized" });
+  if (!session || session.user.email !== ADMIN_EMAIL) {
+    return res.status(403).json({ error: "Forbidden" });
+  }
 
   try {
     const { data: bundles, error } = await supabaseAdmin
       .from("prompt_bundles")
-      .select("id, slug, title, description, icon, category, created_at, expert_name, expert_title, expert_image_url, status")
-      .or("is_published.eq.true,status.eq.published")
-      .order("created_at", { ascending: true });
+      .select("id, slug, title, description, icon, category, status, is_published, expert_name, expert_title, expert_image_url, expert_bio, expert_twitter, expert_linkedin, expert_website, submitted_by, submitted_at, admin_note, created_at")
+      .order("submitted_at", { ascending: false, nullsFirst: false });
 
     if (error) throw error;
 
@@ -33,13 +36,11 @@ export default async function handler(req, res) {
       )
     );
     const countMap = Object.fromEntries(counts.map((c) => [c.id, c.count]));
-
     const result = bundles.map((b) => ({ ...b, promptCount: countMap[b.id] || 0 }));
 
-    res.setHeader("Cache-Control", "s-maxage=60, stale-while-revalidate=300");
     return res.status(200).json({ bundles: result });
   } catch (err) {
-    console.error("/api/bundles error:", err.message);
-    return res.status(500).json({ error: "Failed to fetch bundles" });
+    console.error("/api/admin/submissions error:", err.message);
+    return res.status(500).json({ error: "Failed to fetch submissions" });
   }
 }

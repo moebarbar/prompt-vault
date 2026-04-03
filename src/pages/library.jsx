@@ -766,9 +766,23 @@ export default function Library() {
                           <p className="font-black text-sm text-zinc-900 leading-tight">{bundle.title}</p>
                           <p className="mt-1 text-[11px] leading-relaxed text-zinc-400 line-clamp-2">{bundle.description}</p>
                         </div>
-                        <div className="flex items-center gap-1 text-xs font-bold text-indigo-600">
-                          Start this pack <FiArrowRight size={11} />
-                        </div>
+                        {bundle.expert_name ? (
+                          <div className="flex items-center gap-1.5 border-t border-zinc-100 pt-2 mt-1">
+                            {bundle.expert_image_url ? (
+                              <img src={bundle.expert_image_url} alt={bundle.expert_name}
+                                className="h-5 w-5 rounded-full object-cover border border-zinc-200 shrink-0" />
+                            ) : (
+                              <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-indigo-600 text-[9px] font-black">
+                                {bundle.expert_name.charAt(0)}
+                              </div>
+                            )}
+                            <p className="text-[10px] text-zinc-500 truncate">by <span className="font-bold text-zinc-700">{bundle.expert_name}</span></p>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-1 text-xs font-bold text-indigo-600">
+                            Start this pack <FiArrowRight size={11} />
+                          </div>
+                        )}
                       </motion.button>
                     ))}
                   </div>

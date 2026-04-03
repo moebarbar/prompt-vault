@@ -118,9 +118,25 @@ export default function Bundles() {
                   <p className="font-black text-zinc-900 leading-tight">{bundle.title}</p>
                   <p className="mt-1.5 text-xs leading-relaxed text-zinc-500">{bundle.description}</p>
                 </div>
-                <div className="flex items-center gap-1 text-xs font-bold text-indigo-600">
-                  Start this pack <FiArrowRight size={12} />
-                </div>
+                {/* Expert credit */}
+                {bundle.expert_name && (
+                  <div className="flex items-center gap-2 border-t border-zinc-100 pt-3 mt-1">
+                    {bundle.expert_image_url ? (
+                      <img src={bundle.expert_image_url} alt={bundle.expert_name}
+                        className="h-6 w-6 rounded-full object-cover border border-zinc-200 shrink-0" />
+                    ) : (
+                      <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-indigo-600 text-[10px] font-black">
+                        {bundle.expert_name.charAt(0)}
+                      </div>
+                    )}
+                    <p className="text-[11px] text-zinc-500 truncate">by <span className="font-bold text-zinc-700">{bundle.expert_name}</span></p>
+                  </div>
+                )}
+                {!bundle.expert_name && (
+                  <div className="flex items-center gap-1 text-xs font-bold text-indigo-600">
+                    Start this pack <FiArrowRight size={12} />
+                  </div>
+                )}
               </motion.button>
             ))}
           </div>

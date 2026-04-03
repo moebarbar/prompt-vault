@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { FiX, FiCopy, FiCheck, FiChevronDown, FiChevronUp } from "react-icons/fi";
+import { FiX, FiCopy, FiCheck, FiChevronDown, FiChevronUp, FiTwitter, FiLinkedin, FiGlobe } from "react-icons/fi";
 
 const PromptStep = ({ prompt, index }) => {
   const [expanded, setExpanded] = useState(false);
@@ -25,7 +25,14 @@ const PromptStep = ({ prompt, index }) => {
         </span>
         <div className="min-w-0 flex-1">
           <p className="font-black text-sm text-zinc-900">{prompt.title}</p>
-          {prompt._note && (
+          {/* Expected output badge */}
+          {prompt._output && (
+            <span className="mt-1 inline-flex items-center gap-1 rounded-full bg-green-50 px-2 py-0.5 text-[10px] font-bold text-green-700">
+              ✓ {prompt._output}
+            </span>
+          )}
+          {/* Fallback note */}
+          {!prompt._output && prompt._note && (
             <p className="mt-0.5 text-xs text-indigo-600 font-medium">{prompt._note}</p>
           )}
           <p className="mt-1 text-xs text-zinc-500 line-clamp-1">{prompt.description}</p>
@@ -44,7 +51,7 @@ const PromptStep = ({ prompt, index }) => {
         </div>
       </button>
 
-      {/* Expanded prompt text */}
+      {/* Expanded content */}
       <AnimatePresence initial={false}>
         {expanded && (
           <motion.div
@@ -55,7 +62,18 @@ const PromptStep = ({ prompt, index }) => {
             transition={{ duration: 0.18 }}
             className="overflow-hidden"
           >
-            <div className="border-t-2 border-zinc-100 px-4 pb-4 pt-3">
+            <div className="border-t-2 border-zinc-100 px-4 pb-4 pt-3 space-y-3">
+              {/* Why this step callout */}
+              {prompt._why && (
+                <div className="flex gap-2 rounded-lg bg-indigo-50 border border-indigo-100 px-3 py-2.5">
+                  <span className="text-sm shrink-0">💡</span>
+                  <div>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-indigo-400 mb-0.5">Why this step</p>
+                    <p className="text-xs text-indigo-700 leading-relaxed">{prompt._why}</p>
+                  </div>
+                </div>
+              )}
+              {/* Full prompt text */}
               <pre className="whitespace-pre-wrap font-mono text-xs leading-relaxed text-zinc-700">
                 {prompt.prompt}
               </pre>
@@ -63,6 +81,53 @@ const PromptStep = ({ prompt, index }) => {
           </motion.div>
         )}
       </AnimatePresence>
+    </div>
+  );
+};
+
+const ExpertStrip = ({ bundle }) => {
+  if (!bundle.expert_name) return null;
+
+  return (
+    <div className="flex items-center gap-3 rounded-xl border border-zinc-100 bg-zinc-50 px-3 py-2.5 mt-3">
+      {bundle.expert_image_url ? (
+        <img
+          src={bundle.expert_image_url}
+          alt={bundle.expert_name}
+          className="h-10 w-10 rounded-full object-cover border-2 border-white shadow-sm shrink-0"
+        />
+      ) : (
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-indigo-600 font-black text-sm border-2 border-white shadow-sm">
+          {bundle.expert_name.charAt(0)}
+        </div>
+      )}
+      <div className="flex-1 min-w-0">
+        <p className="text-xs font-black text-zinc-900 leading-tight">{bundle.expert_name}</p>
+        {bundle.expert_title && (
+          <p className="text-[10px] text-zinc-400 truncate">{bundle.expert_title}</p>
+        )}
+      </div>
+      <div className="flex items-center gap-2 shrink-0">
+        {bundle.expert_twitter && (
+          <a href={bundle.expert_twitter.startsWith("http") ? bundle.expert_twitter : `https://twitter.com/${bundle.expert_twitter.replace("@", "")}`}
+            target="_blank" rel="noopener noreferrer"
+            className="text-zinc-400 hover:text-indigo-600 transition-colors" onClick={(e) => e.stopPropagation()}>
+            <FiTwitter size={13} />
+          </a>
+        )}
+        {bundle.expert_linkedin && (
+          <a href={bundle.expert_linkedin} target="_blank" rel="noopener noreferrer"
+            className="text-zinc-400 hover:text-indigo-600 transition-colors" onClick={(e) => e.stopPropagation()}>
+            <FiLinkedin size={13} />
+          </a>
+        )}
+        {bundle.expert_website && (
+          <a href={bundle.expert_website} target="_blank" rel="noopener noreferrer"
+            className="text-zinc-400 hover:text-indigo-600 transition-colors" onClick={(e) => e.stopPropagation()}>
+            <FiGlobe size={13} />
+          </a>
+        )}
+      </div>
     </div>
   );
 };
@@ -88,26 +153,31 @@ export const BundleModal = ({ bundle, prompts, onClose }) => {
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex shrink-0 items-start gap-4 border-b-2 border-zinc-100 p-6">
-          <span className="text-4xl leading-none">{bundle.icon}</span>
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-1">
-              <span className="rounded-full bg-indigo-100 px-2 py-0.5 text-[10px] font-black uppercase tracking-widest text-indigo-600">
-                Goal Pack
-              </span>
-              <span className="text-[10px] font-bold text-zinc-400">
-                {prompts.length} prompts
-              </span>
+        <div className="flex shrink-0 flex-col border-b-2 border-zinc-100 p-6 gap-0">
+          <div className="flex items-start gap-4">
+            <span className="text-4xl leading-none">{bundle.icon}</span>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="rounded-full bg-indigo-100 px-2 py-0.5 text-[10px] font-black uppercase tracking-widest text-indigo-600">
+                  Goal Pack
+                </span>
+                <span className="text-[10px] font-bold text-zinc-400">
+                  {prompts.length} prompts
+                </span>
+              </div>
+              <h2 className="text-xl font-black text-zinc-900 leading-tight">{bundle.title}</h2>
+              <p className="mt-1 text-sm text-zinc-500">{bundle.description}</p>
             </div>
-            <h2 className="text-xl font-black text-zinc-900 leading-tight">{bundle.title}</h2>
-            <p className="mt-1 text-sm text-zinc-500">{bundle.description}</p>
+            <button
+              onClick={onClose}
+              className="shrink-0 rounded-lg p-1.5 text-zinc-400 hover:bg-zinc-100"
+            >
+              <FiX size={18} />
+            </button>
           </div>
-          <button
-            onClick={onClose}
-            className="shrink-0 rounded-lg p-1.5 text-zinc-400 hover:bg-zinc-100"
-          >
-            <FiX size={18} />
-          </button>
+
+          {/* Expert strip */}
+          <ExpertStrip bundle={bundle} />
         </div>
 
         {/* Steps */}
@@ -116,7 +186,7 @@ export const BundleModal = ({ bundle, prompts, onClose }) => {
             Follow the steps in order — click any step to expand the full prompt
           </p>
           {prompts.map((prompt, i) => (
-            <PromptStep key={prompt.id} prompt={prompt} index={i} />
+            <PromptStep key={prompt.id || i} prompt={prompt} index={i} />
           ))}
         </div>
       </motion.div>

@@ -24,6 +24,7 @@ export const NAV_LINKS = [
     sublinks: [
       { title: "All Categories", href: "/library" },
       { title: "Goal Packs", href: "/bundles" },
+      { title: "Submit a Bundle", href: "/submit-bundle" },
       { title: "New Prompts", href: "/library?sort=new" },
       { title: "Popular", href: "/library?sort=popular" },
     ],

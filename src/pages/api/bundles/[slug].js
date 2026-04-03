@@ -19,9 +19,9 @@ export default async function handler(req, res) {
     // Fetch bundle
     const { data: bundle, error: be } = await supabaseAdmin
       .from("prompt_bundles")
-      .select("*")
+      .select("id, slug, title, description, icon, category, is_published, status, expert_name, expert_title, expert_image_url, expert_bio, expert_twitter, expert_linkedin, expert_website")
       .eq("slug", slug)
-      .eq("is_published", true)
+      .or("is_published.eq.true,status.eq.published")
       .single();
 
     if (be || !bundle) return res.status(404).json({ error: "Bundle not found" });
@@ -29,7 +29,7 @@ export default async function handler(req, res) {
     // Fetch ordered bundle_prompts
     const { data: bundlePrompts, error: bpe } = await supabaseAdmin
       .from("bundle_prompts")
-      .select("prompt_id, position, note")
+      .select("prompt_id, position, note, why_this_step, expected_output, prompt_text")
       .eq("bundle_id", bundle.id)
       .order("position", { ascending: true });
 
@@ -44,11 +44,23 @@ export default async function handler(req, res) {
 
     if (pe) throw pe;
 
-    // Merge: keep bundle order + attach curator note
+    // Merge: keep bundle order + attach curator note + step metadata
+    // Submitted bundles may have prompt_text directly on bundle_prompts (no prompt_id link)
     const promptMap = Object.fromEntries((prompts || []).map((p) => [p.id, p]));
-    const orderedPrompts = bundlePrompts
-      .map((bp) => ({ ...promptMap[bp.prompt_id], _note: bp.note, _position: bp.position }))
-      .filter((p) => p.id);
+    const orderedPrompts = bundlePrompts.map((bp) => {
+      const base = bp.prompt_id ? (promptMap[bp.prompt_id] || {}) : {};
+      return {
+        ...base,
+        id: base.id || bp.prompt_id || `step-${bp.position}`,
+        title: base.title || bp.title || `Step ${bp.position}`,
+        description: base.description || "",
+        prompt: base.prompt || bp.prompt_text || "",
+        _note: bp.note,
+        _why: bp.why_this_step,
+        _output: bp.expected_output,
+        _position: bp.position,
+      };
+    }).filter((p) => p.prompt || p._why);
 
     return res.status(200).json({ bundle, prompts: orderedPrompts });
   } catch (err) {
