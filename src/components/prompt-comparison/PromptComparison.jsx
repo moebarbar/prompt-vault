@@ -60,9 +60,7 @@ export const PromptComparison = () => {
           <FiZap size={11} /> The PromptVault difference
         </span>
         <h2 className="mt-3 text-3xl font-black leading-tight md:text-5xl md:leading-tight">
-          Garbage in,{" "}
-          <span className="text-zinc-400">garbage out.</span>
-          <br />
+          Garbage in, <span className="text-zinc-400">garbage out.</span>{" "}
           <span className="text-indigo-600">Good prompt,</span> great results.
         </h2>
         <p className="mx-auto mt-4 max-w-xl text-base text-zinc-500 md:text-lg">

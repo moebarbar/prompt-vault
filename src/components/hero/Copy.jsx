@@ -20,7 +20,7 @@ export const Copy = () => {
           <FiArrowUpRight className="mr-2 inline-block" />
         </Link>
       </div>
-      <h1 className="max-w-4xl text-center text-4xl font-black leading-[1.15] md:text-7xl md:leading-[1.15]">
+      <h1 className="max-w-4xl text-center text-4xl font-black leading-[1.15] sm:text-5xl md:text-7xl md:leading-[1.15]">
         Professional AI prompts.{" "}
         <span className="text-indigo-600">Copy. Paste. Done.</span>
       </h1>

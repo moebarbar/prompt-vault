@@ -4,7 +4,7 @@ import { animate, useInView } from "framer-motion";
 export const Stats = () => {
   return (
     <section className="mx-auto max-w-5xl px-4">
-      <div className="flex flex-col items-center justify-center gap-12 sm:flex-row sm:gap-0">
+      <div className="flex flex-col items-center justify-center gap-8 sm:flex-row sm:gap-0 sm:divide-x-2 sm:divide-zinc-200">
         <Stat num={8000} suffix="+" subheading="Expert AI prompts" />
         <Stat num={27} suffix="" subheading="Professional categories" />
         <Stat num={0} suffix="$" subheading="Cost to get started" prefix="$" />
@@ -29,7 +29,7 @@ const Stat = ({ num, suffix, prefix = "", decimals = 0, subheading }) => {
   }, [num, decimals, isInView]);
 
   return (
-    <div className="flex w-full flex-col items-center">
+    <div className="flex w-full flex-col items-center px-8 sm:px-12">
       <p className="mb-2 text-center text-5xl font-medium">
         {prefix}<span ref={ref}></span>{suffix}
       </p>

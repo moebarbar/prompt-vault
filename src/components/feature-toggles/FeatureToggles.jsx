@@ -12,10 +12,9 @@ export const FeatureToggles = () => {
 
   return (
     <section className="relative mx-auto max-w-6xl px-2 md:px-4">
-      <SectionHeading>Show the people what your product does</SectionHeading>
+      <SectionHeading>Everything you need to get real results from AI</SectionHeading>
       <SectionSubheading>
-        It should be very clear who your product is for and what problem it
-        solves for them.
+        Every prompt is engineered with role, context, and structure — so you stop getting generic AI output and start getting work you can actually use.
       </SectionSubheading>
       <div className="w-full">
         <div className="mb-9 grid grid-cols-2 gap-4 sm:grid-cols-4">

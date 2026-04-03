@@ -7,8 +7,8 @@ export const Footer = () => {
   return (
     <div className="bg-white">
       <footer className="relative mx-auto max-w-6xl overflow-hidden py-12">
-        <div className="grid grid-cols-12 gap-x-1.5 gap-y-6 px-2 md:px-4">
-          <div className="col-span-6 md:col-span-4">
+        <div className="grid grid-cols-12 gap-x-4 gap-y-8 px-4 md:px-6">
+          <div className="col-span-12 md:col-span-4">
             <LogoSmall />
             <p className="mt-3 text-xs text-zinc-500 max-w-xs">
               8,000+ professional AI prompts for ChatGPT, Claude &amp; more. Copy, paste, and get real results — no prompt engineering required.
@@ -45,7 +45,7 @@ export const Footer = () => {
 };
 
 const GenericColumn = ({ title, links }) => (
-  <div className="col-span-6 space-y-2 text-sm md:col-span-2">
+  <div className="col-span-6 space-y-2 text-sm sm:col-span-3 md:col-span-2">
     <span className="block font-bold">{title}</span>
     {links.map((l) => (
       <Link key={l.title} href={l.href} className="flex items-center gap-1.5 transition-colors hover:text-indigo-600 hover:underline text-zinc-600">

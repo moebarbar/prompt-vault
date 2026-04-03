@@ -158,7 +158,7 @@ export default function Home() {
           <Hero />
         </ExpandableNavBar>
         <Logos />
-        <div className="space-y-36 bg-zinc-50 pb-24 pt-24 md:pt-32">
+        <div className="space-y-20 bg-zinc-50 pb-16 pt-16 md:space-y-36 md:pb-24 md:pt-32">
           <Stats />
           <PromptComparison />
           <FeatureToggles />
