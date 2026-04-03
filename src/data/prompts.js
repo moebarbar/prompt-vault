@@ -24,6 +24,7 @@ export const CATEGORIES = [
   { id: "coding", label: "Coding", icon: "🧑‍💻", description: "Debug, build, and document code with AI assistance" },
   { id: "students", label: "Students", icon: "🎓", description: "Essays, study plans, research, and assignment prompts" },
   { id: "aiworkflows", label: "AI Workflows", icon: "🤖", description: "Automate tasks and chain AI agents for maximum output" },
+  { id: "dataanalysis", label: "Data Analysis", icon: "📈", description: "Turn raw data into insights — clean, analyze, visualize, and communicate findings" },
 ];
 
 export const PROMPTS = {

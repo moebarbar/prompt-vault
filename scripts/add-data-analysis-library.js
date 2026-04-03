@@ -13,16 +13,16 @@ const supabase = createClient(
 
 // Map tag → PromptVault category_id + subcategory
 const TAG_MAP = {
-  define:      { cat: "it",          sub: "Data Analysis" },
-  understand:  { cat: "it",          sub: "Data Analysis" },
-  clean:       { cat: "it",          sub: "Data Cleaning" },
-  analyze:     { cat: "it",          sub: "Data Analysis" },
-  visualize:   { cat: "it",          sub: "Data Visualization" },
-  interpret:   { cat: "it",          sub: "Data Insights" },
-  communicate: { cat: "it",          sub: "Data Reporting" },
-  business:    { cat: "business",    sub: "Business Analytics" },
-  debug:       { cat: "it",          sub: "Data Analysis" },
-  utility:     { cat: "it",          sub: "Data Analysis" },
+  define:      { cat: "dataanalysis", sub: "Define the Question" },
+  understand:  { cat: "dataanalysis", sub: "Understand Your Data" },
+  clean:       { cat: "dataanalysis", sub: "Data Cleaning" },
+  analyze:     { cat: "dataanalysis", sub: "Analysis" },
+  visualize:   { cat: "dataanalysis", sub: "Data Visualization" },
+  interpret:   { cat: "dataanalysis", sub: "Interpret Results" },
+  communicate: { cat: "dataanalysis", sub: "Communicate Findings" },
+  business:    { cat: "dataanalysis", sub: "Business Analytics" },
+  debug:       { cat: "dataanalysis", sub: "Debug & Validate" },
+  utility:     { cat: "dataanalysis", sub: "Utility" },
 };
 
 function parsePrompts(markdown) {
