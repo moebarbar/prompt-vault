@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   FiSearch, FiCopy, FiBookmark, FiCheck, FiX,
   FiMenu, FiLogOut, FiUser, FiShare2,
-  FiChevronDown,
+  FiChevronDown, FiArrowRight, FiZap,
 } from "react-icons/fi";
 import { CATEGORIES } from "@/data/prompts";
 import { useAuth } from "@/lib/auth";
@@ -14,10 +14,103 @@ import { useSavedPrompts } from "@/lib/useSavedPrompts";
 import { font } from "@/fonts";
 import { LogoSmall } from "@/components/navigation/Logo";
 
-const PAGE_SIZE = 48; // larger page size so grouped view has enough per section
+const PAGE_SIZE = 48;
 
 // Precompute category map for quick lookups
 const CAT_MAP = Object.fromEntries(CATEGORIES.map((c) => [c.id, c]));
+
+// ── Quick-start use cases ─────────────────────────────────────────────────────
+const QUICK_STARTS = [
+  { label: "Cold Email", icon: "✉️", cat: "sales", sub: "Cold Calling" },
+  { label: "LinkedIn Post", icon: "💼", cat: "social", sub: "LinkedIn Presence" },
+  { label: "Blog Post", icon: "✍️", cat: "writing", sub: null },
+  { label: "Debug Code", icon: "🐛", cat: "coding", sub: "Debugging" },
+  { label: "Sales Pitch", icon: "🎯", cat: "sales", sub: "Objection Handling" },
+  { label: "Instagram Caption", icon: "📸", cat: "social", sub: "Instagram Growth" },
+  { label: "Job Description", icon: "📋", cat: "hr", sub: "Recruitment & Hiring" },
+  { label: "Brand Name", icon: "🏷️", cat: "branding", sub: "Brand Naming" },
+  { label: "YouTube Script", icon: "▶️", cat: "youtube", sub: "YouTube Strategy" },
+  { label: "Market Research", icon: "🔭", cat: "marketresearch", sub: "Customer Research" },
+  { label: "SaaS MVP", icon: "🚀", cat: "vibecoding", sub: "SaaS Building" },
+  { label: "Resume Bullet", icon: "📄", cat: "resume", sub: "Resume & Job Search" },
+  { label: "Ad Copy", icon: "📣", cat: "marketing", sub: "Ad Copywriting" },
+  { label: "Data Analysis", icon: "📈", cat: "dataanalysis", sub: "Analysis" },
+  { label: "Legal Contract", icon: "⚖️", cat: "legal", sub: "Contracts & Agreements" },
+  { label: "SEO Article", icon: "🔍", cat: "seo", sub: "Google Ranking" },
+];
+
+// ── Search autocomplete ───────────────────────────────────────────────────────
+const SearchAutocomplete = ({ search, onCatSelect, onSubSelect, onSearchSelect, allSubcategories }) => {
+  if (!search || search.length < 2) return null;
+  const q = search.toLowerCase();
+
+  // Match categories
+  const catMatches = CATEGORIES.filter((c) =>
+    c.label.toLowerCase().includes(q) || c.description.toLowerCase().includes(q)
+  ).slice(0, 3);
+
+  // Match subcategories
+  const subMatches = allSubcategories
+    .filter((s) => s.sub.toLowerCase().includes(q))
+    .slice(0, 4);
+
+  if (catMatches.length === 0 && subMatches.length === 0) return null;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: -4 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -4 }}
+      transition={{ duration: 0.12 }}
+      className="absolute left-0 right-0 top-full z-50 mt-1 overflow-hidden rounded-xl border-2 border-zinc-200 bg-white shadow-xl"
+    >
+      {catMatches.length > 0 && (
+        <div>
+          <p className="px-3 pt-2.5 text-[10px] font-black uppercase tracking-widest text-zinc-400">Categories</p>
+          {catMatches.map((cat) => (
+            <button
+              key={cat.id}
+              onMouseDown={(e) => { e.preventDefault(); onCatSelect(cat.id); }}
+              className="flex w-full items-center gap-3 px-3 py-2.5 text-left transition-colors hover:bg-indigo-50"
+            >
+              <span className="text-lg">{cat.icon}</span>
+              <div>
+                <p className="text-sm font-bold text-zinc-800">{cat.label}</p>
+                <p className="text-xs text-zinc-400">{cat.description}</p>
+              </div>
+              <FiArrowRight size={13} className="ml-auto text-zinc-300" />
+            </button>
+          ))}
+        </div>
+      )}
+      {subMatches.length > 0 && (
+        <div className={catMatches.length > 0 ? "border-t border-zinc-100" : ""}>
+          <p className="px-3 pt-2.5 text-[10px] font-black uppercase tracking-widest text-zinc-400">Subcategories</p>
+          {subMatches.map((s) => (
+            <button
+              key={`${s.cat}-${s.sub}`}
+              onMouseDown={(e) => { e.preventDefault(); onCatSelect(s.cat); onSubSelect(s.sub); }}
+              className="flex w-full items-center gap-3 px-3 py-2.5 text-left transition-colors hover:bg-indigo-50"
+            >
+              <span className="text-lg">{CAT_MAP[s.cat]?.icon}</span>
+              <div>
+                <p className="text-sm font-bold text-zinc-800">{s.sub}</p>
+                <p className="text-xs text-zinc-400">in {CAT_MAP[s.cat]?.label}</p>
+              </div>
+              <FiArrowRight size={13} className="ml-auto text-zinc-300" />
+            </button>
+          ))}
+        </div>
+      )}
+      <button
+        onMouseDown={(e) => { e.preventDefault(); onSearchSelect(); }}
+        className="flex w-full items-center gap-2 border-t border-zinc-100 px-3 py-2.5 text-sm font-bold text-indigo-600 hover:bg-indigo-50"
+      >
+        <FiSearch size={13} /> Search all prompts for &ldquo;{search}&rdquo;
+      </button>
+    </motion.div>
+  );
+};
 
 // ── Skeleton Card ─────────────────────────────────────────────────────────────
 const SkeletonCard = () => (
@@ -304,6 +397,8 @@ export default function Library() {
   const [loadingMore, setLoadingMore] = useState(false);
   const [subcategories, setSubcategories] = useState([]);
   const [categoryCounts, setCategoryCounts] = useState({});
+  const [allSubcategories, setAllSubcategories] = useState([]);
+  const [searchFocused, setSearchFocused] = useState(false);
 
   const searchDebounce = useRef(null);
   const savedIdsRef = useRef(savedIds);
@@ -319,6 +414,18 @@ export default function Library() {
         setCategoryCounts(map);
       })
       .catch(() => {});
+  }, []);
+
+  // Pre-load all subcategories for search autocomplete
+  useEffect(() => {
+    Promise.all(
+      CATEGORIES.map((cat) =>
+        fetch(`/api/prompts/subcategories?cat=${cat.id}`)
+          .then((r) => r.json())
+          .then((data) => (data.subcategories || []).map((sub) => ({ cat: cat.id, sub })))
+          .catch(() => [])
+      )
+    ).then((results) => setAllSubcategories(results.flat()));
   }, []);
 
   // Sync URL → state on mount
@@ -433,16 +540,31 @@ export default function Library() {
           <button className="rounded-lg p-1.5 text-zinc-500 hover:bg-zinc-100 md:hidden" onClick={() => setSidebarOpen(true)}>
             <FiMenu size={20} />
           </button>
-          <div className="flex flex-1 items-center gap-2 rounded-xl border-2 border-zinc-200 bg-zinc-50 px-3 py-1.5 focus-within:border-indigo-400 transition-colors">
-            <FiSearch className="shrink-0 text-zinc-400" size={15} />
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search 20,000+ prompts..."
-              className="flex-1 bg-transparent text-sm outline-none placeholder:text-zinc-400"
-            />
-            {search && <button onClick={() => setSearch("")} className="text-zinc-400 hover:text-zinc-700"><FiX size={14} /></button>}
+          <div className="relative flex flex-1">
+            <div className={`flex w-full items-center gap-2 rounded-xl border-2 bg-zinc-50 px-3 py-1.5 transition-colors ${searchFocused ? "border-indigo-400" : "border-zinc-200"}`}>
+              <FiSearch className="shrink-0 text-zinc-400" size={15} />
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                onFocus={() => setSearchFocused(true)}
+                onBlur={() => setSearchFocused(false)}
+                placeholder="Search prompts, categories, topics..."
+                className="flex-1 bg-transparent text-sm outline-none placeholder:text-zinc-400"
+              />
+              {search && <button onClick={() => setSearch("")} className="text-zinc-400 hover:text-zinc-700"><FiX size={14} /></button>}
+            </div>
+            <AnimatePresence>
+              {searchFocused && (
+                <SearchAutocomplete
+                  search={search}
+                  onCatSelect={(catId) => { handleCatSelect(catId); setSearch(""); }}
+                  onSubSelect={(sub) => setActiveSub(sub)}
+                  onSearchSelect={() => {}}
+                  allSubcategories={allSubcategories}
+                />
+              )}
+            </AnimatePresence>
           </div>
 
           {/* Sort */}
@@ -491,31 +613,61 @@ export default function Library() {
         {/* Content */}
         <main className="flex-1 overflow-y-auto px-4 py-6">
 
-          {/* ── Global stats bar (only on All Prompts view) ── */}
+          {/* ── Home view: stats + quick starts + category grid ── */}
           {!activeCat && !search && !showSavedOnly && Object.keys(categoryCounts).length > 0 && (
-            <div className="mb-6 rounded-2xl border-2 border-zinc-200 bg-white p-5">
-              <div className="mb-4 flex items-baseline gap-3">
-                <span className="text-4xl font-black text-zinc-900 tabular-nums">
-                  {Object.values(categoryCounts).reduce((a, b) => a + b, 0).toLocaleString()}
-                </span>
-                <span className="text-base font-bold text-zinc-400">expert prompts across {CATEGORIES.length} categories</span>
+            <div className="mb-6 space-y-4">
+              {/* Total count */}
+              <div className="rounded-2xl border-2 border-zinc-200 bg-white px-5 py-4">
+                <div className="flex items-baseline gap-3">
+                  <span className="text-4xl font-black text-zinc-900 tabular-nums">
+                    {Object.values(categoryCounts).reduce((a, b) => a + b, 0).toLocaleString()}
+                  </span>
+                  <span className="text-base font-bold text-zinc-400">expert prompts across {CATEGORIES.length} categories</span>
+                </div>
               </div>
-              <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-                {CATEGORIES.map((cat) => (
-                  <button
-                    key={cat.id}
-                    onClick={() => handleCatSelect(cat.id)}
-                    className="flex items-center gap-2 rounded-xl border-2 border-zinc-100 bg-zinc-50 px-3 py-2 text-left transition-all hover:border-indigo-300 hover:bg-indigo-50"
-                  >
-                    <span className="text-lg leading-none">{cat.icon}</span>
-                    <div className="min-w-0">
-                      <p className="truncate text-xs font-bold text-zinc-700">{cat.label}</p>
-                      <p className="text-[11px] font-black text-indigo-600 tabular-nums">
-                        {categoryCounts[cat.id] != null ? categoryCounts[cat.id].toLocaleString() : "…"}
-                      </p>
-                    </div>
-                  </button>
-                ))}
+
+              {/* Quick Start */}
+              <div className="rounded-2xl border-2 border-zinc-200 bg-white p-5">
+                <div className="mb-3 flex items-center gap-2">
+                  <FiZap size={13} className="text-indigo-500" />
+                  <p className="text-xs font-black uppercase tracking-widest text-zinc-500">Quick Start — jump straight to what you need</p>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {QUICK_STARTS.map((qs) => (
+                    <button
+                      key={qs.label}
+                      onClick={() => {
+                        handleCatSelect(qs.cat);
+                        if (qs.sub) setTimeout(() => setActiveSub(qs.sub), 100);
+                      }}
+                      className="flex items-center gap-1.5 rounded-full border-2 border-zinc-200 bg-zinc-50 px-3 py-1.5 text-xs font-bold text-zinc-700 transition-all hover:border-indigo-400 hover:bg-indigo-50 hover:text-indigo-700"
+                    >
+                      <span>{qs.icon}</span> {qs.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Category grid */}
+              <div className="rounded-2xl border-2 border-zinc-200 bg-white p-5">
+                <p className="mb-3 text-xs font-black uppercase tracking-widest text-zinc-400">Browse by category</p>
+                <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+                  {CATEGORIES.map((cat) => (
+                    <button
+                      key={cat.id}
+                      onClick={() => handleCatSelect(cat.id)}
+                      className="flex items-center gap-2 rounded-xl border-2 border-zinc-100 bg-zinc-50 px-3 py-2 text-left transition-all hover:border-indigo-300 hover:bg-indigo-50"
+                    >
+                      <span className="text-lg leading-none">{cat.icon}</span>
+                      <div className="min-w-0">
+                        <p className="truncate text-xs font-bold text-zinc-700">{cat.label}</p>
+                        <p className="text-[11px] font-black text-indigo-600 tabular-nums">
+                          {categoryCounts[cat.id] != null ? categoryCounts[cat.id].toLocaleString() : "…"}
+                        </p>
+                      </div>
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
           )}
@@ -554,11 +706,11 @@ export default function Library() {
               {Array.from({ length: 12 }).map((_, i) => <SkeletonCard key={i} />)}
             </div>
           ) : displayedPrompts.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-24 text-center">
+            <div className="flex flex-col items-center py-16 text-center">
               <span className="mb-3 text-5xl">{showSavedOnly ? "🔖" : "🔍"}</span>
               <h3 className="text-lg font-bold">{showSavedOnly ? "No saved prompts yet" : "No prompts found"}</h3>
               <p className="mt-1 text-sm text-zinc-500">
-                {showSavedOnly ? "Click the bookmark on any prompt to save it" : "Try a different search or category"}
+                {showSavedOnly ? "Click the bookmark on any prompt to save it" : `Nothing matched "${search || activeSub}" — try one of these instead`}
               </p>
               <button
                 onClick={() => { setSearch(""); setActiveCat(null); setActiveSub(null); setShowSavedOnly(false); }}
@@ -566,6 +718,22 @@ export default function Library() {
               >
                 Browse all prompts
               </button>
+              {!showSavedOnly && (
+                <div className="mt-8 w-full max-w-lg">
+                  <p className="mb-3 text-xs font-black uppercase tracking-widest text-zinc-400">Try a quick start instead</p>
+                  <div className="flex flex-wrap justify-center gap-2">
+                    {QUICK_STARTS.slice(0, 8).map((qs) => (
+                      <button
+                        key={qs.label}
+                        onClick={() => { setSearch(""); handleCatSelect(qs.cat); if (qs.sub) setTimeout(() => setActiveSub(qs.sub), 100); }}
+                        className="flex items-center gap-1.5 rounded-full border-2 border-zinc-200 bg-white px-3 py-1.5 text-xs font-bold text-zinc-700 transition-all hover:border-indigo-400 hover:text-indigo-700"
+                      >
+                        {qs.icon} {qs.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           ) : (
             <>
