@@ -8,6 +8,7 @@ import { NAV_LINKS } from "@/components/navigation/constants";
 import { Stats } from "@/components/stats/Stats";
 import { FinalCTA } from "@/components/final-cta/FinalCTA";
 import { Footer } from "@/components/footer/Footer";
+import { PromptComparison } from "@/components/prompt-comparison/PromptComparison";
 import { font } from "@/fonts";
 import { CATEGORIES } from "@/data/prompts";
 import Link from "next/link";
@@ -42,6 +43,7 @@ export default function Home() {
       <Logos />
       <div className="space-y-36 bg-zinc-50 pb-24 pt-24 md:pt-32">
         <Stats />
+        <PromptComparison />
         <FeatureToggles />
         <CategoriesGrid />
         <Supports />
