@@ -413,6 +413,7 @@ export default function Library() {
   const [selectedBundle, setSelectedBundle] = useState(null);
   const [bundlePrompts, setBundlePrompts] = useState([]);
   const [loadingBundle, setLoadingBundle] = useState(false);
+  const [bundleError, setBundleError] = useState(false);
 
   const searchDebounce = useRef(null);
   const savedIdsRef = useRef(savedIds);
@@ -430,12 +431,14 @@ export default function Library() {
   const openBundle = async (bundle) => {
     setLoadingBundle(true);
     setSelectedBundle(bundle);
+    setBundleError(false);
     try {
       const res = await fetch(`/api/bundles/${bundle.slug}`);
       const data = await res.json();
       setBundlePrompts(data.prompts || []);
     } catch {
       setBundlePrompts([]);
+      setBundleError(true);
     } finally {
       setLoadingBundle(false);
     }
@@ -941,12 +944,26 @@ export default function Library() {
             user={user}
           />
         )}
-        {selectedBundle && !loadingBundle && bundlePrompts.length > 0 && (
-          <BundleModal
-            bundle={selectedBundle}
-            prompts={bundlePrompts}
-            onClose={() => { setSelectedBundle(null); setBundlePrompts([]); }}
-          />
+        {selectedBundle && !loadingBundle && (
+          bundleError ? (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={() => { setSelectedBundle(null); setBundleError(false); }}>
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+                className="rounded-2xl border-2 border-zinc-900 bg-white p-8 text-center shadow-[6px_6px_0px_#18181b]"
+                onClick={(e) => e.stopPropagation()}>
+                <p className="text-3xl mb-3">⚠️</p>
+                <p className="font-black text-zinc-900">Couldn&apos;t load this pack</p>
+                <p className="mt-1 text-sm text-zinc-500">Please try again in a moment.</p>
+                <button onClick={() => { setSelectedBundle(null); setBundleError(false); }}
+                  className="mt-4 rounded-xl bg-indigo-600 px-4 py-2 text-sm font-bold text-white">Close</button>
+              </motion.div>
+            </div>
+          ) : (
+            <BundleModal
+              bundle={selectedBundle}
+              prompts={bundlePrompts}
+              onClose={() => { setSelectedBundle(null); setBundlePrompts([]); }}
+            />
+          )
         )}
         {loadingBundle && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">

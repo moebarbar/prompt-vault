@@ -146,7 +146,14 @@ export default function SubmitBundle() {
             <Link href="/bundles" className="flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-3 text-sm font-bold text-white hover:bg-indigo-700 transition-colors">
               Browse Goal Packs
             </Link>
-            <button onClick={() => { setSubmitted(false); setExpert({ expert_name: "", expert_title: "", expert_bio: "", expert_image_url: "", expert_twitter: "", expert_linkedin: "", expert_website: "", submitted_by: "" }); setBundle({ title: "", description: "", icon: "", category: "other" }); setSteps([defaultStep(), defaultStep(), defaultStep()]); }}
+            <button
+              onClick={() => {
+                setSubmitted(false);
+                setError("");
+                setExpert({ expert_name: "", expert_title: "", expert_bio: "", expert_image_url: "", expert_twitter: "", expert_linkedin: "", expert_website: "", submitted_by: "" });
+                setBundle({ title: "", description: "", icon: "", category: "other" });
+                setSteps([defaultStep(), defaultStep(), defaultStep()]);
+              }}
               className="rounded-xl border-2 border-zinc-200 px-4 py-3 text-sm font-bold text-zinc-600 hover:border-zinc-300 transition-colors">
               Submit Another Bundle
             </button>

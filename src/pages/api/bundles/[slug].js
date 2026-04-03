@@ -26,28 +26,30 @@ export default async function handler(req, res) {
 
     if (be || !bundle) return res.status(404).json({ error: "Bundle not found" });
 
-    // Fetch ordered bundle_prompts
+    // Fetch ordered bundle_prompts — include title for submitted bundles
     const { data: bundlePrompts, error: bpe } = await supabaseAdmin
       .from("bundle_prompts")
-      .select("prompt_id, position, note, why_this_step, expected_output, prompt_text")
+      .select("prompt_id, position, note, why_this_step, expected_output, prompt_text, title")
       .eq("bundle_id", bundle.id)
       .order("position", { ascending: true });
 
     if (bpe) throw bpe;
 
-    // Fetch full prompt data
-    const promptIds = bundlePrompts.map((bp) => bp.prompt_id);
-    const { data: prompts, error: pe } = await supabaseAdmin
-      .from("prompts")
-      .select("id, title, description, prompt, category_id, subcategory, tags, model")
-      .in("id", promptIds);
+    // Only query the prompts table if there are actual library-linked prompt IDs
+    const linkedIds = (bundlePrompts || []).map((bp) => bp.prompt_id).filter(Boolean);
+    let promptMap = {};
+    if (linkedIds.length > 0) {
+      const { data: prompts, error: pe } = await supabaseAdmin
+        .from("prompts")
+        .select("id, title, description, prompt, category_id, subcategory, tags, model")
+        .in("id", linkedIds);
+      if (pe) throw pe;
+      promptMap = Object.fromEntries((prompts || []).map((p) => [p.id, p]));
+    }
 
-    if (pe) throw pe;
-
-    // Merge: keep bundle order + attach curator note + step metadata
-    // Submitted bundles may have prompt_text directly on bundle_prompts (no prompt_id link)
-    const promptMap = Object.fromEntries((prompts || []).map((p) => [p.id, p]));
-    const orderedPrompts = bundlePrompts.map((bp) => {
+    // Merge: keep bundle order + attach step metadata
+    // Submitted bundles use prompt_text + title stored directly on bundle_prompts
+    const orderedPrompts = (bundlePrompts || []).map((bp) => {
       const base = bp.prompt_id ? (promptMap[bp.prompt_id] || {}) : {};
       return {
         ...base,

@@ -42,7 +42,7 @@ const RejectModal = ({ onConfirm, onCancel }) => {
   );
 };
 
-const BundleRow = ({ bundle, onApprove, onReject, onPreview }) => {
+const BundleRow = ({ bundle, onApprove, onReject }) => {
   const submittedDate = bundle.submitted_at
     ? new Date(bundle.submitted_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
     : "—";
@@ -182,10 +182,10 @@ export default function AdminSubmissions() {
     );
   }
 
-  const filtered = bundles.filter((b) => b.status === activeTab || (activeTab === "published" && b.is_published && b.status !== "rejected"));
+  const filtered = bundles.filter((b) => b.status === activeTab);
   const counts = {
     pending: bundles.filter((b) => b.status === "pending").length,
-    published: bundles.filter((b) => b.status === "published" || (b.is_published && b.status !== "rejected")).length,
+    published: bundles.filter((b) => b.status === "published").length,
     rejected: bundles.filter((b) => b.status === "rejected").length,
   };
 
