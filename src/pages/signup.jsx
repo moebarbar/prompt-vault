@@ -52,7 +52,7 @@ export default function Signup() {
   return (
     <div className={`${font.className} min-h-screen bg-zinc-50 flex flex-col`}>
       <Head>
-        <title>Sign Up — PromptVault</title>
+        <title>Sign Up — PromptUpp</title>
       </Head>
 
       {/* Top nav */}
@@ -60,7 +60,7 @@ export default function Signup() {
         <Link href="/">
           <div className="flex items-center gap-2">
             <div className="flex items-center justify-center w-7 h-7 bg-indigo-600 rounded text-white font-black text-xs">P</div>
-            <span className="font-black text-base tracking-tight">PromptVault</span>
+            <span className="font-black text-base tracking-tight">PromptUpp</span>
           </div>
         </Link>
         <Link href="/login" className="text-sm font-medium text-zinc-500 hover:text-indigo-600">

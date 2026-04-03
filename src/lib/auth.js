@@ -30,7 +30,7 @@ export const AuthProvider = ({ children }) => {
   const signUp = async (email, password) => {
     const redirectTo = typeof window !== "undefined"
       ? `${window.location.origin}/auth/callback`
-      : `${process.env.NEXT_PUBLIC_SITE_URL || "https://www.promptvault.io"}/auth/callback`;
+      : `${process.env.NEXT_PUBLIC_SITE_URL || "https://www.promptupp.com"}/auth/callback`;
     const { data, error } = await supabase.auth.signUp({
       email,
       password,

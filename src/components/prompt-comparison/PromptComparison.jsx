@@ -57,14 +57,14 @@ export const PromptComparison = () => {
       {/* Header */}
       <div className="mb-12 text-center">
         <span className="mb-4 inline-flex items-center gap-1.5 rounded-full border-2 border-indigo-200 bg-indigo-50 px-3 py-1 text-xs font-black uppercase tracking-widest text-indigo-600">
-          <FiZap size={11} /> The PromptVault difference
+          <FiZap size={11} /> The PromptUpp difference
         </span>
         <h2 className="mt-3 text-3xl font-black leading-tight md:text-5xl md:leading-tight">
           Garbage in, <span className="text-zinc-400">garbage out.</span>{" "}
           <span className="text-indigo-600">Good prompt,</span> great results.
         </h2>
         <p className="mx-auto mt-4 max-w-xl text-base text-zinc-500 md:text-lg">
-          Most people type one vague sentence and wonder why AI doesn't deliver. Every PromptVault prompt is engineered to get you a real, usable result — first time.
+          Most people type one vague sentence and wonder why AI doesn't deliver. Every PromptUpp prompt is engineered to get you a real, usable result — first time.
         </p>
       </div>
 
@@ -136,7 +136,7 @@ export const PromptComparison = () => {
               <div className="flex h-5 w-5 items-center justify-center rounded-full bg-indigo-600">
                 <FiCheck size={11} className="text-white" strokeWidth={3} />
               </div>
-              <span className="text-sm font-black text-indigo-700">PromptVault prompt</span>
+              <span className="text-sm font-black text-indigo-700">PromptUpp prompt</span>
               <span className="ml-auto rounded-full bg-indigo-600 px-2 py-0.5 text-[10px] font-black text-white">READY TO USE</span>
             </div>
             <div className="flex flex-col gap-4 p-5 flex-1">

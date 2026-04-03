@@ -14,13 +14,13 @@ import { font } from "@/fonts";
 import { CATEGORIES } from "@/data/prompts";
 import Link from "next/link";
 
-const SITE_URL = "https://www.promptvault.io";
+const SITE_URL = "https://www.promptupp.com";
 
 const SCHEMAS = [
   {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    name: "PromptVault",
+    name: "PromptUpp",
     url: SITE_URL,
     description: "Professional AI prompt library with 8,000+ expert copy-paste prompts for ChatGPT, Claude, and other AI tools across 27 categories.",
     potentialAction: {
@@ -32,7 +32,7 @@ const SCHEMAS = [
   {
     "@context": "https://schema.org",
     "@type": "Organization",
-    name: "PromptVault",
+    name: "PromptUpp",
     url: SITE_URL,
     logo: `${SITE_URL}/favicon.ico`,
     sameAs: ["https://instagram.com/immoebarbar"],
@@ -40,23 +40,23 @@ const SCHEMAS = [
   {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
-    name: "PromptVault",
+    name: "PromptUpp",
     applicationCategory: "ProductivityApplication",
     operatingSystem: "Web",
     url: SITE_URL,
-    description: "PromptVault is a professional AI prompt library offering 8,000+ expert copy-paste prompts for ChatGPT, Claude, and other AI tools across 27 professional categories.",
+    description: "PromptUpp is a professional AI prompt library offering 8,000+ expert copy-paste prompts for ChatGPT, Claude, and other AI tools across 27 professional categories.",
     offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
   },
 ];
 
 const FAQ_ITEMS = [
   {
-    q: "What is PromptVault?",
-    a: "PromptVault is a professional AI prompt library with 8,000+ expert copy-paste prompts for ChatGPT, Claude, and other AI tools. Every prompt is engineered to deliver real, usable results — no prompt engineering required.",
+    q: "What is PromptUpp?",
+    a: "PromptUpp is a professional AI prompt library with 8,000+ expert copy-paste prompts for ChatGPT, Claude, and other AI tools. Every prompt is engineered to deliver real, usable results — no prompt engineering required.",
   },
   {
-    q: "Is PromptVault free to use?",
-    a: "Yes. PromptVault is free to access. Sign up with your email to browse and copy prompts across all 27 professional categories — no credit card required.",
+    q: "Is PromptUpp free to use?",
+    a: "Yes. PromptUpp is free to access. Sign up with your email to browse and copy prompts across all 27 professional categories — no credit card required.",
   },
   {
     q: "What AI tools do the prompts work with?",
@@ -64,11 +64,11 @@ const FAQ_ITEMS = [
   },
   {
     q: "What categories of prompts are available?",
-    a: "PromptVault covers 27 categories including Marketing, Sales, SEO, Coding, Writing, Vibe Coding, Legal, HR, Branding, Ecommerce, YouTube, Social Media, Data Analysis, Market Research, Project Management, and more.",
+    a: "PromptUpp covers 27 categories including Marketing, Sales, SEO, Coding, Writing, Vibe Coding, Legal, HR, Branding, Ecommerce, YouTube, Social Media, Data Analysis, Market Research, Project Management, and more.",
   },
   {
-    q: "How are PromptVault prompts different from prompts I find online?",
-    a: "Every PromptVault prompt is professionally engineered with a clear role, context, constraints, and structured output format. They are tested to deliver specific, usable results — not generic AI responses.",
+    q: "How are PromptUpp prompts different from prompts I find online?",
+    a: "Every PromptUpp prompt is professionally engineered with a clear role, context, constraints, and structured output format. They are tested to deliver specific, usable results — not generic AI responses.",
   },
 ];
 
@@ -113,7 +113,7 @@ const FAQ = () => (
   <section className="mx-auto max-w-3xl px-4">
     <div className="mb-10 text-center">
       <h2 className="text-3xl font-black md:text-4xl">Frequently asked questions</h2>
-      <p className="mt-3 text-lg text-zinc-500">Everything you need to know about PromptVault.</p>
+      <p className="mt-3 text-lg text-zinc-500">Everything you need to know about PromptUpp.</p>
     </div>
     <div className="space-y-4">
       {FAQ_ITEMS.map((item) => (
@@ -133,7 +133,7 @@ const FAQ = () => (
 );
 
 export default function Home() {
-  const title = "PromptVault — Professional AI Prompt Library for ChatGPT & Claude";
+  const title = "PromptUpp — Professional AI Prompt Library for ChatGPT & Claude";
   const description = "8,000+ expert copy-paste AI prompts for ChatGPT, Claude & more. Marketing, sales, coding, SEO, writing, legal, HR — ready to use in seconds. Free access, no credit card.";
 
   return (

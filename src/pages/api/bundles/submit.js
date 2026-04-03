@@ -87,7 +87,7 @@ export default async function handler(req, res) {
     // Notify admin
     try {
       await resend.emails.send({
-        from: "PromptVault <hello@promptvault.io>",
+        from: "PromptUpp <hello@promptupp.com>",
         to: "moebarbar@hotmail.com",
         subject: `New Bundle Submission: "${title}" by ${expert_name}`,
         html: `
@@ -102,7 +102,7 @@ export default async function handler(req, res) {
               <tr><td style="padding:8px 0;color:#6b7280;font-size:14px">Category</td><td style="padding:8px 0">${category || "other"}</td></tr>
             </table>
             <div style="margin-top:24px">
-              <a href="https://www.promptvault.io/admin/submissions" style="display:inline-block;background:#4f46e5;color:white;padding:10px 20px;border-radius:8px;text-decoration:none;font-weight:600">Review Submission →</a>
+              <a href="https://www.promptupp.com/admin/submissions" style="display:inline-block;background:#4f46e5;color:white;padding:10px 20px;border-radius:8px;text-decoration:none;font-weight:600">Review Submission →</a>
             </div>
           </div>
         `,

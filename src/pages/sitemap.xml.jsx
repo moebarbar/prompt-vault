@@ -1,6 +1,6 @@
 import { CATEGORIES } from "@/data/prompts";
 
-const SITE_URL = "https://www.promptvault.io";
+const SITE_URL = "https://www.promptupp.com";
 
 function generateSitemap(categories) {
   const staticPages = [

@@ -191,7 +191,7 @@ export default function AdminSubmissions() {
 
   return (
     <div style={font.style} className="min-h-screen bg-zinc-50">
-      <Head><title>Bundle Submissions — Admin | PromptVault</title></Head>
+      <Head><title>Bundle Submissions — Admin | PromptUpp</title></Head>
 
       <header className="flex h-14 items-center gap-4 border-b-2 border-zinc-200 bg-white px-4">
         <Link href="/library"><LogoSmall /></Link>

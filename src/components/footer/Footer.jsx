@@ -14,7 +14,7 @@ export const Footer = () => {
               8,000+ professional AI prompts for ChatGPT, Claude &amp; more. Copy, paste, and get real results — no prompt engineering required.
             </p>
             <span className="mt-3 inline-block text-xs text-zinc-400">
-              © PromptVault — All rights reserved.
+              © PromptUpp — All rights reserved.
             </span>
           </div>
           <GenericColumn title="Library" links={[

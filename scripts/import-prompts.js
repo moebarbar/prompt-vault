@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 /**
- * PromptVault — Prompt Import Script
+ * PromptUpp — Prompt Import Script
  * Reads all JSON files from prompt_vault_jsons/, enhances every prompt,
- * maps to PromptVault category IDs, and inserts into Supabase in batches.
+ * maps to PromptUpp category IDs, and inserts into Supabase in batches.
  *
  * Run: node scripts/import-prompts.js
  */
@@ -31,7 +31,7 @@ const MIN_WORD_COUNT = 3; // only skip truly garbage entries (1-2 word labels)
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 
 // ── Category mapping ──────────────────────────────────────────────────────────
-// Maps source file slug + subcategory keywords → PromptVault category_id
+// Maps source file slug + subcategory keywords → PromptUpp category_id
 const CATEGORY_MAP = [
   // file-level mappings first (catches everything in that file)
   { file: "marketing",         sub: null,                    cat: "marketing"    },
@@ -1098,7 +1098,7 @@ async function insertBatch(rows) {
 }
 
 async function main() {
-  console.log("🚀 PromptVault Import Script\n");
+  console.log("🚀 PromptUpp Import Script\n");
 
   // Test connection
   const { error: testErr } = await supabase.from("prompts").select("id").limit(1);

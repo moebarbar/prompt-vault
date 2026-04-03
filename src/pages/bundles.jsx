@@ -62,7 +62,7 @@ export default function Bundles() {
   return (
     <div style={font.style} className="min-h-screen bg-zinc-50">
       <Head>
-        <title>Goal Packs — PromptVault</title>
+        <title>Goal Packs — PromptUpp</title>
         <meta name="description" content="Curated prompt bundles for specific goals. Launch a SaaS, grow your audience, close clients — follow a proven sequence of expert prompts." />
       </Head>
 

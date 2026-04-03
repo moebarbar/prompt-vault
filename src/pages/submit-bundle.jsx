@@ -141,7 +141,7 @@ export default function SubmitBundle() {
           <p className="mt-2 text-zinc-500">
             We&rsquo;ll review your submission and reach out to <strong>{expert.submitted_by}</strong> within 48 hours.
           </p>
-          <p className="mt-2 text-sm text-zinc-400">If approved, your bundle will be live on PromptVault with your name and profile.</p>
+          <p className="mt-2 text-sm text-zinc-400">If approved, your bundle will be live on PromptUpp with your name and profile.</p>
           <div className="mt-6 flex flex-col gap-2">
             <Link href="/bundles" className="flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-3 text-sm font-bold text-white hover:bg-indigo-700 transition-colors">
               Browse Goal Packs
@@ -166,8 +166,8 @@ export default function SubmitBundle() {
   return (
     <div style={font.style} className="min-h-screen bg-zinc-50">
       <Head>
-        <title>Submit a Goal Pack — PromptVault</title>
-        <meta name="description" content="Share your expertise. Submit a curated sequence of prompts for a specific goal and get featured on PromptVault." />
+        <title>Submit a Goal Pack — PromptUpp</title>
+        <meta name="description" content="Share your expertise. Submit a curated sequence of prompts for a specific goal and get featured on PromptUpp." />
       </Head>
 
       <header className="flex h-14 items-center gap-4 border-b-2 border-zinc-200 bg-white px-4">

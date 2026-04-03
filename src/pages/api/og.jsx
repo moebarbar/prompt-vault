@@ -132,7 +132,7 @@ export default function handler(req) {
                 ⚡
               </div>
               <span style={{ color: "white", fontSize: "24px", fontWeight: "900", letterSpacing: "-0.5px" }}>
-                PromptVault
+                PromptUpp
               </span>
             </div>
             {category && (
@@ -203,7 +203,7 @@ export default function handler(req) {
                 letterSpacing: "-0.3px",
               }}
             >
-              promptvault.io →
+              promptupp.com →
             </div>
           </div>
         </div>

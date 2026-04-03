@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * PromptVault — Category Fix + Deduplication Script
+ * PromptUpp — Category Fix + Deduplication Script
  *
  * Step 1: Delete all duplicate prompts (keep lowest ID per fingerprint)
  * Step 2: Reclassify prompts to the correct category_id based on subcategory
@@ -263,7 +263,7 @@ async function printCategorySummary() {
 }
 
 async function main() {
-  console.log("🚀 PromptVault — Category Fix + Deduplication\n");
+  console.log("🚀 PromptUpp — Category Fix + Deduplication\n");
   console.log("=".repeat(50));
 
   if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {

@@ -10,7 +10,7 @@ export default function NotFound() {
       className="flex min-h-screen flex-col items-center justify-center bg-zinc-50 px-4 text-center"
     >
       <Head>
-        <title>404 — Page Not Found | PromptVault</title>
+        <title>404 — Page Not Found | PromptUpp</title>
       </Head>
 
       {/* Grid background */}

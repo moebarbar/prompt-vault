@@ -45,7 +45,7 @@ export const OPTIONS = [
         name="Sarah K."
         title="Marketing Lead"
         company="GrowthLoop"
-        content="I used to spend 45 minutes writing a single email sequence. Now I grab a prompt, paste it into Claude, customize it in 5 minutes, and it's done. PromptVault paid for itself in the first week."
+        content="I used to spend 45 minutes writing a single email sequence. Now I grab a prompt, paste it into Claude, customize it in 5 minutes, and it's done. PromptUpp paid for itself in the first week."
       />
     ),
   },
@@ -93,7 +93,7 @@ export const OPTIONS = [
         name="Linda F."
         title="HR Manager"
         company="TechCorp"
-        content="We onboarded PromptVault for our whole HR team. Writing job descriptions used to take our recruiter half a day. Now it's 20 minutes. We've also been using the performance review prompts — game changer."
+        content="We onboarded PromptUpp for our whole HR team. Writing job descriptions used to take our recruiter half a day. Now it's 20 minutes. We've also been using the performance review prompts — game changer."
       />
     ),
   },

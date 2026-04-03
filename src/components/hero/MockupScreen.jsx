@@ -12,7 +12,7 @@ export const MockupScreen = () => {
           <span className="size-2 rounded-full bg-green-400" />
         </div>
         <span className="rounded bg-zinc-600 px-2 py-0.5 text-xs text-zinc-100">
-          promptvault.app/library
+          promptupp.com/library
         </span>
         <div className="w-4" />
       </div>

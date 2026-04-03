@@ -11,7 +11,7 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
-// Map tag → PromptVault category_id + subcategory
+// Map tag → PromptUpp category_id + subcategory
 const TAG_MAP = {
   define:      { cat: "dataanalysis", sub: "Define the Question" },
   understand:  { cat: "dataanalysis", sub: "Understand Your Data" },

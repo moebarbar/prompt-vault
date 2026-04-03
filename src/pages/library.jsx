@@ -572,10 +572,10 @@ export default function Library() {
       <Head>
         <title>
           {activeCatData
-            ? `ChatGPT Prompts for ${activeCatData.label} — Copy & Paste Ready | PromptVault`
+            ? `ChatGPT Prompts for ${activeCatData.label} — Copy & Paste Ready | PromptUpp`
             : search
-            ? `"${search}" AI Prompts — PromptVault`
-            : "AI Prompt Library — 8,000+ Professional Copy-Paste Prompts | PromptVault"}
+            ? `"${search}" AI Prompts — PromptUpp`
+            : "AI Prompt Library — 8,000+ Professional Copy-Paste Prompts | PromptUpp"}
         </title>
         <meta
           name="description"
@@ -587,10 +587,10 @@ export default function Library() {
         />
         <link
           rel="canonical"
-          href={`https://www.promptvault.io/library${activeCat ? `?cat=${activeCat}` : ""}`}
+          href={`https://www.promptupp.com/library${activeCat ? `?cat=${activeCat}` : ""}`}
         />
-        <meta property="og:title" content={activeCatData ? `${activeCatData.label} AI Prompts | PromptVault` : "AI Prompt Library | PromptVault"} />
-        <meta property="og:url" content={`https://www.promptvault.io/library${activeCat ? `?cat=${activeCat}` : ""}`} />
+        <meta property="og:title" content={activeCatData ? `${activeCatData.label} AI Prompts | PromptUpp` : "AI Prompt Library | PromptUpp"} />
+        <meta property="og:url" content={`https://www.promptupp.com/library${activeCat ? `?cat=${activeCat}` : ""}`} />
         {(() => {
           const ogTitle = activeCatData
             ? `${activeCatData.icon} ${activeCatData.label} AI Prompts`
@@ -599,7 +599,7 @@ export default function Library() {
             ? activeCatData.description
             : "Copy. Paste. Get real results.";
           const ogCategory = activeCatData ? activeCatData.label : null;
-          const ogUrl = `https://www.promptvault.io/api/og?title=${encodeURIComponent(ogTitle)}&sub=${encodeURIComponent(ogSub)}${ogCategory ? `&category=${encodeURIComponent(ogCategory)}` : ""}`;
+          const ogUrl = `https://www.promptupp.com/api/og?title=${encodeURIComponent(ogTitle)}&sub=${encodeURIComponent(ogSub)}${ogCategory ? `&category=${encodeURIComponent(ogCategory)}` : ""}`;
           return (
             <>
               <meta property="og:image" content={ogUrl} />
