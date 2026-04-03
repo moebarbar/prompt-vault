@@ -519,8 +519,27 @@ export default function Library() {
   return (
     <div style={font.style} className="flex h-screen overflow-hidden bg-zinc-50">
       <Head>
-        <title>{activeCatData ? `${activeCatData.label} Prompts — PromptVault` : "Prompt Library — PromptVault"}</title>
-        <meta name="description" content="Browse 20,000+ expert copy-paste prompts for marketing, sales, coding, and more." />
+        <title>
+          {activeCatData
+            ? `ChatGPT Prompts for ${activeCatData.label} — Copy & Paste Ready | PromptVault`
+            : search
+            ? `"${search}" AI Prompts — PromptVault`
+            : "AI Prompt Library — 8,000+ Professional Copy-Paste Prompts | PromptVault"}
+        </title>
+        <meta
+          name="description"
+          content={
+            activeCatData
+              ? `Browse ${categoryCounts[activeCatData.id] || "hundreds of"} expert ${activeCatData.label} AI prompts. Copy-paste ready for ChatGPT, Claude, and more. ${activeCatData.description}`
+              : "Browse 8,000+ professional AI prompts for ChatGPT, Claude & more. Marketing, sales, coding, SEO, HR, legal — copy and paste instantly. Free access."
+          }
+        />
+        <link
+          rel="canonical"
+          href={`https://www.promptvault.io/library${activeCat ? `?cat=${activeCat}` : ""}`}
+        />
+        <meta property="og:title" content={activeCatData ? `${activeCatData.label} AI Prompts | PromptVault` : "AI Prompt Library | PromptVault"} />
+        <meta property="og:url" content={`https://www.promptvault.io/library${activeCat ? `?cat=${activeCat}` : ""}`} />
       </Head>
 
       <Sidebar

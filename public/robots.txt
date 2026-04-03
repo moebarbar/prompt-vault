@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+
+# Block auth and API routes
+Disallow: /api/
+Disallow: /login
+Disallow: /signup
+Disallow: /dashboard
+
+Sitemap: https://www.promptvault.io/sitemap.xml

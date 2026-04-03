@@ -11,7 +11,7 @@ export const Footer = () => {
           <div className="col-span-6 md:col-span-4">
             <LogoSmall />
             <p className="mt-3 text-xs text-zinc-500 max-w-xs">
-              500+ expert prompts for every role. Copy, paste, and get real AI results — no prompt engineering required.
+              8,000+ professional AI prompts for ChatGPT, Claude &amp; more. Copy, paste, and get real results — no prompt engineering required.
             </p>
             <span className="mt-3 inline-block text-xs text-zinc-400">
               © PromptVault — All rights reserved.

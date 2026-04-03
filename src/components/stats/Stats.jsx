@@ -5,8 +5,8 @@ export const Stats = () => {
   return (
     <section className="mx-auto max-w-5xl px-4">
       <div className="flex flex-col items-center justify-center gap-12 sm:flex-row sm:gap-0">
-        <Stat num={500} suffix="+" subheading="Prompts ready to use" />
-        <Stat num={25} suffix="" subheading="Professional categories" />
+        <Stat num={8000} suffix="+" subheading="Expert AI prompts" />
+        <Stat num={27} suffix="" subheading="Professional categories" />
         <Stat num={0} suffix="$" subheading="Cost to get started" prefix="$" />
       </div>
     </section>

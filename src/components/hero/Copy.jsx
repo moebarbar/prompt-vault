@@ -21,12 +21,11 @@ export const Copy = () => {
         </Link>
       </div>
       <h1 className="max-w-4xl text-center text-4xl font-black leading-[1.15] md:text-7xl md:leading-[1.15]">
-        Copy. Paste. Get real{" "}
-        <span className="text-indigo-600">AI results.</span>
+        Professional AI prompts.{" "}
+        <span className="text-indigo-600">Copy. Paste. Done.</span>
       </h1>
       <p className="mx-auto my-4 max-w-3xl text-center text-base leading-relaxed md:my-6 md:text-2xl md:leading-relaxed">
-        500+ expert prompts for marketing, sales, coding, legal, HR, and 20 more
-        categories. Ready to use — no prompt engineering required.
+        8,000+ expert copy-paste prompts for ChatGPT, Claude &amp; more — across marketing, sales, coding, SEO, legal, HR, and 20+ categories. Ready to use instantly.
       </p>
       <div className="flex flex-col sm:flex-row items-center gap-3">
         <Link href="/signup">
