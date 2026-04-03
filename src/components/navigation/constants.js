@@ -23,6 +23,7 @@ export const NAV_LINKS = [
     title: "Explore",
     sublinks: [
       { title: "All Categories", href: "/library" },
+      { title: "Goal Packs", href: "/bundles" },
       { title: "New Prompts", href: "/library?sort=new" },
       { title: "Popular", href: "/library?sort=popular" },
     ],

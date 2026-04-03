@@ -13,6 +13,7 @@ import { useAuth } from "@/lib/auth";
 import { useSavedPrompts } from "@/lib/useSavedPrompts";
 import { font } from "@/fonts";
 import { LogoSmall } from "@/components/navigation/Logo";
+import { BundleModal } from "@/components/bundles/BundleModal";
 
 const PAGE_SIZE = 48;
 
@@ -407,9 +408,38 @@ export default function Library() {
   const [allSubcategories, setAllSubcategories] = useState([]);
   const [searchFocused, setSearchFocused] = useState(false);
 
+  // Bundles (Goal Packs) state
+  const [bundles, setBundles] = useState([]);
+  const [selectedBundle, setSelectedBundle] = useState(null);
+  const [bundlePrompts, setBundlePrompts] = useState([]);
+  const [loadingBundle, setLoadingBundle] = useState(false);
+
   const searchDebounce = useRef(null);
   const savedIdsRef = useRef(savedIds);
   useEffect(() => { savedIdsRef.current = savedIds; }, [savedIds]);
+
+  // Load bundles for home view
+  useEffect(() => {
+    if (!user) return;
+    fetch("/api/bundles")
+      .then((r) => r.json())
+      .then((data) => setBundles(data.bundles || []))
+      .catch(() => {});
+  }, [user]);
+
+  const openBundle = async (bundle) => {
+    setLoadingBundle(true);
+    setSelectedBundle(bundle);
+    try {
+      const res = await fetch(`/api/bundles/${bundle.slug}`);
+      const data = await res.json();
+      setBundlePrompts(data.prompts || []);
+    } catch {
+      setBundlePrompts([]);
+    } finally {
+      setLoadingBundle(false);
+    }
+  };
 
   // Load category counts once
   useEffect(() => {
@@ -707,6 +737,44 @@ export default function Library() {
                 </div>
               </div>
 
+              {/* Goal Packs */}
+              {bundles.length > 0 && (
+                <div>
+                  <div className="mb-3 flex items-center justify-between">
+                    <p className="text-xs font-black uppercase tracking-widest text-zinc-400">Goal Packs — prompts with a purpose</p>
+                    <Link href="/bundles" className="flex items-center gap-1 text-xs font-bold text-indigo-600 hover:underline">
+                      See all <FiArrowRight size={11} />
+                    </Link>
+                  </div>
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                    {bundles.slice(0, 3).map((bundle) => (
+                      <motion.button
+                        key={bundle.id}
+                        onClick={() => openBundle(bundle)}
+                        whileHover={{ y: -3 }}
+                        whileTap={{ y: 0 }}
+                        transition={{ duration: 0.12 }}
+                        className="flex flex-col gap-3 rounded-2xl border-2 border-zinc-900 bg-white p-4 text-left shadow-[3px_3px_0px_#18181b] transition-shadow hover:shadow-[5px_5px_0px_#4f46e5]"
+                      >
+                        <div className="flex items-start justify-between gap-2">
+                          <span className="text-3xl leading-none">{bundle.icon}</span>
+                          <span className="shrink-0 rounded-full border border-indigo-200 bg-indigo-50 px-2 py-0.5 text-[10px] font-black tabular-nums text-indigo-600">
+                            {bundle.promptCount} prompts
+                          </span>
+                        </div>
+                        <div>
+                          <p className="font-black text-sm text-zinc-900 leading-tight">{bundle.title}</p>
+                          <p className="mt-1 text-[11px] leading-relaxed text-zinc-400 line-clamp-2">{bundle.description}</p>
+                        </div>
+                        <div className="flex items-center gap-1 text-xs font-bold text-indigo-600">
+                          Start this pack <FiArrowRight size={11} />
+                        </div>
+                      </motion.button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* Category grid */}
               <div>
                 <p className="mb-3 text-xs font-black uppercase tracking-widest text-zinc-400">Browse by category</p>
@@ -858,6 +926,18 @@ export default function Library() {
             onToggleSave={toggleSave}
             user={user}
           />
+        )}
+        {selectedBundle && !loadingBundle && bundlePrompts.length > 0 && (
+          <BundleModal
+            bundle={selectedBundle}
+            prompts={bundlePrompts}
+            onClose={() => { setSelectedBundle(null); setBundlePrompts([]); }}
+          />
+        )}
+        {loadingBundle && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+            <div className="h-10 w-10 animate-spin rounded-full border-4 border-white/30 border-t-white" />
+          </div>
         )}
       </AnimatePresence>
     </div>
