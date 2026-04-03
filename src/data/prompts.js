@@ -26,6 +26,7 @@ export const CATEGORIES = [
   { id: "aiworkflows", label: "AI Workflows", icon: "🤖", description: "Automate tasks and chain AI agents for maximum output" },
   { id: "dataanalysis", label: "Data Analysis", icon: "📈", description: "Turn raw data into insights — clean, analyze, visualize, and communicate findings" },
   { id: "marketresearch", label: "Market Research", icon: "🔭", description: "Validate ideas, size markets, and understand customers before you build or launch" },
+  { id: "videogen", label: "Video Gen", icon: "🎬", description: "Sora, Runway, Kling, and Pika prompt frameworks for AI-generated video" },
 ];
 
 export const PROMPTS = {
