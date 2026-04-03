@@ -636,12 +636,18 @@ export default function Library() {
           {!activeCat && !search && !showSavedOnly && Object.keys(categoryCounts).length > 0 && (
             <div className="mb-6 space-y-4">
               {/* Total count */}
-              <div className="rounded-2xl border-2 border-zinc-200 bg-white px-5 py-4">
-                <div className="flex items-baseline gap-3">
-                  <span className="text-4xl font-black text-zinc-900 tabular-nums">
-                    {Object.values(categoryCounts).reduce((a, b) => a + b, 0).toLocaleString()}
-                  </span>
-                  <span className="text-base font-bold text-zinc-400">expert prompts across {CATEGORIES.length} categories</span>
+              <div className="rounded-2xl border-2 border-zinc-900 bg-indigo-600 px-6 py-5 shadow-[5px_5px_0px_#18181b]">
+                <div className="flex items-center justify-between gap-4">
+                  <div>
+                    <p className="text-[11px] font-black uppercase tracking-widest text-indigo-200">Total prompts in the vault</p>
+                    <div className="mt-1 flex items-baseline gap-3">
+                      <span className="text-5xl font-black text-white tabular-nums">
+                        {Object.values(categoryCounts).reduce((a, b) => a + b, 0).toLocaleString()}
+                      </span>
+                      <span className="text-sm font-bold text-indigo-300">across {CATEGORIES.length} categories</span>
+                    </div>
+                  </div>
+                  <span className="hidden text-6xl sm:block">⚡</span>
                 </div>
               </div>
 
@@ -668,23 +674,29 @@ export default function Library() {
               </div>
 
               {/* Category grid */}
-              <div className="rounded-2xl border-2 border-zinc-200 bg-white p-5">
+              <div>
                 <p className="mb-3 text-xs font-black uppercase tracking-widest text-zinc-400">Browse by category</p>
-                <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
                   {CATEGORIES.map((cat) => (
-                    <button
+                    <motion.button
                       key={cat.id}
                       onClick={() => handleCatSelect(cat.id)}
-                      className="flex items-center gap-2 rounded-xl border-2 border-zinc-100 bg-zinc-50 px-3 py-2 text-left transition-all hover:border-indigo-300 hover:bg-indigo-50"
+                      whileHover={{ y: -3 }}
+                      whileTap={{ y: 0 }}
+                      transition={{ duration: 0.12 }}
+                      className="group flex flex-col gap-3 rounded-2xl border-2 border-zinc-900 bg-white p-4 text-left shadow-[3px_3px_0px_#18181b] transition-shadow hover:shadow-[5px_5px_0px_#4f46e5] active:shadow-[2px_2px_0px_#18181b]"
                     >
-                      <span className="text-lg leading-none">{cat.icon}</span>
-                      <div className="min-w-0">
-                        <p className="truncate text-xs font-bold text-zinc-700">{cat.label}</p>
-                        <p className="text-[11px] font-black text-indigo-600 tabular-nums">
+                      <div className="flex items-start justify-between gap-2">
+                        <span className="text-3xl leading-none">{cat.icon}</span>
+                        <span className="shrink-0 rounded-full border border-indigo-200 bg-indigo-50 px-2 py-0.5 text-[10px] font-black tabular-nums text-indigo-600">
                           {categoryCounts[cat.id] != null ? categoryCounts[cat.id].toLocaleString() : "…"}
-                        </p>
+                        </span>
                       </div>
-                    </button>
+                      <div>
+                        <p className="font-black text-sm text-zinc-900 leading-tight">{cat.label}</p>
+                        <p className="mt-1 text-[11px] leading-relaxed text-zinc-400 line-clamp-2">{cat.description}</p>
+                      </div>
+                    </motion.button>
                   ))}
                 </div>
               </div>
