@@ -25,6 +25,7 @@ export const CATEGORIES = [
   { id: "students", label: "Students", icon: "🎓", description: "Essays, study plans, research, and assignment prompts" },
   { id: "aiworkflows", label: "AI Workflows", icon: "🤖", description: "Automate tasks and chain AI agents for maximum output" },
   { id: "dataanalysis", label: "Data Analysis", icon: "📈", description: "Turn raw data into insights — clean, analyze, visualize, and communicate findings" },
+  { id: "marketresearch", label: "Market Research", icon: "🔭", description: "Validate ideas, size markets, and understand customers before you build or launch" },
 ];
 
 export const PROMPTS = {
