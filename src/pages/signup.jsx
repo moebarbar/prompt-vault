@@ -81,12 +81,13 @@ export default function Signup() {
               <p className="text-zinc-500 mb-6">
                 We sent a confirmation link to <strong>{email}</strong>. Click it to activate your account and access the full prompt library.
               </p>
-              <Link
-                href="/library"
-                className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-6 py-3 font-bold text-white hover:bg-indigo-700"
-              >
-                Browse prompts while you wait <FiArrowRight />
-              </Link>
+              <div className="flex flex-col items-center gap-3">
+                <div className="flex items-center gap-2 rounded-full border-2 border-zinc-200 bg-zinc-50 px-4 py-2 text-sm text-zinc-500">
+                  <span className="h-2 w-2 animate-pulse rounded-full bg-green-500" />
+                  Confirmation email on its way
+                </div>
+                <p className="text-xs text-zinc-400">Check your spam folder if you don&apos;t see it in 2 minutes</p>
+              </div>
             </div>
           ) : (
             <div className="rounded-2xl border-2 border-zinc-900 bg-white p-8 shadow-[6px_6px_0px_#18181b]">
