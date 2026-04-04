@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 
-// Icon mark: terminal prompt ">" + upward arrow — "Prompt" + "Upp"
+// Single bold caret ^ — prompt symbol + "Upp" in one mark
 const IconMark = ({ size = 32, radius = 8 }) => (
   <svg
     width={size}
@@ -11,34 +11,11 @@ const IconMark = ({ size = 32, radius = 8 }) => (
     xmlns="http://www.w3.org/2000/svg"
     style={{ display: "block", flexShrink: 0 }}
   >
-    {/* Background */}
     <rect width="32" height="32" rx={radius} fill="#4f46e5" />
-
-    {/* Terminal prompt chevron ">" */}
     <path
-      d="M7 10.5L14.5 16L7 21.5"
+      d="M7 22L16 10L25 22"
       stroke="white"
-      strokeWidth="2.8"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-
-    {/* Upward arrow shaft */}
-    <line
-      x1="21"
-      y1="22"
-      x2="21"
-      y2="12"
-      stroke="white"
-      strokeWidth="2.6"
-      strokeLinecap="round"
-    />
-
-    {/* Upward arrow head */}
-    <path
-      d="M17.5 15.5L21 12L24.5 15.5"
-      stroke="white"
-      strokeWidth="2.6"
+      strokeWidth="3.8"
       strokeLinecap="round"
       strokeLinejoin="round"
     />
