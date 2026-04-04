@@ -296,86 +296,133 @@ const GroupedGrid = ({ prompts, onOpen, savedIds, onToggleSave, user }) => {
 };
 
 // ── Sidebar ───────────────────────────────────────────────────────────────────
-const Sidebar = ({ activeCat, onSelect, activeSub, onSubSelect, sidebarOpen, setSidebarOpen, categoryCounts, subcategories }) => {
+const BUNDLE_CATEGORY_LABELS = {
+  startup: "🚀 Startup", growth: "📈 Growth", freelancing: "💼 Freelancing",
+  marketing: "📣 Marketing", productivity: "⚡ Productivity", ecommerce: "🛒 E-Commerce",
+  career: "🎯 Career", content: "✍️ Content", business: "🏢 Business",
+  finance: "💰 Finance", other: "📦 Other",
+};
+
+const Sidebar = ({
+  activeSection, activeCat, onSelect, activeSub, onSubSelect,
+  sidebarOpen, setSidebarOpen, categoryCounts, subcategories,
+  bundles, activeBundleCat, onBundleCatSelect,
+}) => {
   const grandTotal = Object.values(categoryCounts).reduce((a, b) => a + b, 0);
+  const bundleCategories = [...new Set((bundles || []).map((b) => b.category).filter(Boolean))];
 
   return (
   <>
     {sidebarOpen && <div className="fixed inset-0 z-30 bg-black/30 md:hidden" onClick={() => setSidebarOpen(false)} />}
-    <aside className={`fixed left-0 top-0 z-40 flex h-full w-64 flex-col border-r-2 border-zinc-200 bg-white transition-transform duration-200 md:static md:translate-x-0 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}>
+    <aside className={`fixed left-0 top-0 z-40 flex h-full w-56 shrink-0 flex-col border-r-2 border-zinc-200 bg-white transition-transform duration-200 md:static md:translate-x-0 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}>
       <div className="flex h-14 items-center border-b-2 border-zinc-200 px-4"><LogoSmall /></div>
 
-      {/* Grand total stat */}
+      {/* Stat block — contextual per section */}
       <div className="border-b-2 border-zinc-100 bg-indigo-50 px-4 py-3">
-        <p className="text-[10px] font-black uppercase tracking-widest text-indigo-400">Total Prompts</p>
-        <p className="text-2xl font-black text-indigo-600 tabular-nums">
-          {grandTotal > 0 ? grandTotal.toLocaleString() : "…"}
-        </p>
-        <p className="text-[10px] text-indigo-400">{CATEGORIES.length} categories</p>
+        {activeSection === "prompts" ? (
+          <>
+            <p className="text-[10px] font-black uppercase tracking-widest text-indigo-400">Total Prompts</p>
+            <p className="text-2xl font-black text-indigo-600 tabular-nums">
+              {grandTotal > 0 ? grandTotal.toLocaleString() : "…"}
+            </p>
+            <p className="text-[10px] text-indigo-400">{CATEGORIES.length} categories</p>
+          </>
+        ) : (
+          <>
+            <p className="text-[10px] font-black uppercase tracking-widest text-indigo-400">Goal Packs</p>
+            <p className="text-2xl font-black text-indigo-600 tabular-nums">
+              {bundles?.length || "…"}
+            </p>
+            <p className="text-[10px] text-indigo-400">step-by-step prompt sequences</p>
+          </>
+        )}
       </div>
 
       <div className="flex-1 overflow-y-auto px-3 py-4">
-        <button onClick={() => { onSelect(null); setSidebarOpen(false); }}
-          className={`mb-1 flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm font-bold transition-colors ${activeCat === null ? "bg-indigo-600 text-white" : "text-zinc-600 hover:bg-zinc-100"}`}>
-          <span className="flex-1 text-left">✨ All Prompts</span>
-          {grandTotal > 0 && (
-            <span className={`shrink-0 rounded-full px-1.5 py-0.5 text-[10px] font-bold tabular-nums ${activeCat === null ? "bg-indigo-500 text-white" : "bg-zinc-100 text-zinc-400"}`}>
-              {grandTotal.toLocaleString()}
-            </span>
-          )}
-        </button>
-        <div className="mb-2 mt-4 px-3 text-[10px] font-black uppercase tracking-widest text-zinc-400">Categories</div>
-        {CATEGORIES.map((cat) => {
-          const isActive = activeCat === cat.id;
-          const hasSubcats = isActive && subcategories.length > 0;
-          return (
-            <div key={cat.id}>
-              <button
-                onClick={() => { onSelect(cat.id); setSidebarOpen(false); }}
-                className={`flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors ${isActive ? "bg-indigo-50 font-bold text-indigo-700" : "text-zinc-600 hover:bg-zinc-50"}`}
-              >
-                <span className="text-base">{cat.icon}</span>
-                <span className="flex-1 leading-tight text-left">{cat.label}</span>
-                <span className={`ml-auto shrink-0 rounded-full px-1.5 py-0.5 text-[10px] font-bold tabular-nums ${isActive ? "bg-indigo-100 text-indigo-700" : "bg-zinc-100 text-zinc-400"}`}>
-                  {categoryCounts[cat.id] ?? "…"}
+        {activeSection === "prompts" ? (
+          <>
+            <button onClick={() => { onSelect(null); setSidebarOpen(false); }}
+              className={`mb-1 flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm font-bold transition-colors ${activeCat === null ? "bg-indigo-600 text-white" : "text-zinc-600 hover:bg-zinc-100"}`}>
+              <span className="flex-1 text-left">✨ All Prompts</span>
+              {grandTotal > 0 && (
+                <span className={`shrink-0 rounded-full px-1.5 py-0.5 text-[10px] font-bold tabular-nums ${activeCat === null ? "bg-indigo-500 text-white" : "bg-zinc-100 text-zinc-400"}`}>
+                  {grandTotal.toLocaleString()}
                 </span>
-                {hasSubcats && <FiChevronDown size={11} className="shrink-0 text-indigo-400" />}
-              </button>
-
-              {/* Expandable subcategory list */}
-              <AnimatePresence initial={false}>
-                {hasSubcats && (
-                  <motion.div
-                    key="subcats"
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.18 }}
-                    className="overflow-hidden"
+              )}
+            </button>
+            <div className="mb-2 mt-4 px-3 text-[10px] font-black uppercase tracking-widest text-zinc-400">Categories</div>
+            {CATEGORIES.map((cat) => {
+              const isActive = activeCat === cat.id;
+              const hasSubcats = isActive && subcategories.length > 0;
+              return (
+                <div key={cat.id}>
+                  <button
+                    onClick={() => { onSelect(cat.id); setSidebarOpen(false); }}
+                    className={`flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors ${isActive ? "bg-indigo-50 font-bold text-indigo-700" : "text-zinc-600 hover:bg-zinc-50"}`}
                   >
-                    <div className="mb-1 ml-7 border-l-2 border-indigo-100 pl-2 pt-0.5">
-                      <button
-                        onClick={() => onSubSelect(null)}
-                        className={`flex w-full rounded-md px-2 py-1.5 text-xs font-bold transition-colors ${activeSub === null ? "text-indigo-600" : "text-zinc-400 hover:text-zinc-700"}`}
-                      >
-                        All {cat.label}
-                      </button>
-                      {subcategories.map((sub) => (
-                        <button
-                          key={sub}
-                          onClick={() => onSubSelect(sub)}
-                          className={`flex w-full truncate rounded-md px-2 py-1.5 text-xs transition-colors ${activeSub === sub ? "font-bold text-indigo-600" : "text-zinc-500 hover:text-zinc-900"}`}
-                        >
-                          {sub}
-                        </button>
-                      ))}
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+                    <span className="text-base">{cat.icon}</span>
+                    <span className="flex-1 leading-tight text-left">{cat.label}</span>
+                    <span className={`ml-auto shrink-0 rounded-full px-1.5 py-0.5 text-[10px] font-bold tabular-nums ${isActive ? "bg-indigo-100 text-indigo-700" : "bg-zinc-100 text-zinc-400"}`}>
+                      {categoryCounts[cat.id] ?? "…"}
+                    </span>
+                    {hasSubcats && <FiChevronDown size={11} className="shrink-0 text-indigo-400" />}
+                  </button>
+                  <AnimatePresence initial={false}>
+                    {hasSubcats && (
+                      <motion.div key="subcats" initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.18 }} className="overflow-hidden">
+                        <div className="mb-1 ml-7 border-l-2 border-indigo-100 pl-2 pt-0.5">
+                          <button onClick={() => onSubSelect(null)}
+                            className={`flex w-full rounded-md px-2 py-1.5 text-xs font-bold transition-colors ${activeSub === null ? "text-indigo-600" : "text-zinc-400 hover:text-zinc-700"}`}>
+                            All {cat.label}
+                          </button>
+                          {subcategories.map((sub) => (
+                            <button key={sub} onClick={() => onSubSelect(sub)}
+                              className={`flex w-full truncate rounded-md px-2 py-1.5 text-xs transition-colors ${activeSub === sub ? "font-bold text-indigo-600" : "text-zinc-500 hover:text-zinc-900"}`}>
+                              {sub}
+                            </button>
+                          ))}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              );
+            })}
+          </>
+        ) : (
+          <>
+            <button onClick={() => onBundleCatSelect(null)}
+              className={`mb-1 flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm font-bold transition-colors ${activeBundleCat === null ? "bg-indigo-600 text-white" : "text-zinc-600 hover:bg-zinc-100"}`}>
+              🎯 All Packs
+              <span className={`ml-auto shrink-0 rounded-full px-1.5 py-0.5 text-[10px] font-bold tabular-nums ${activeBundleCat === null ? "bg-indigo-500 text-white" : "bg-zinc-100 text-zinc-400"}`}>
+                {bundles?.length || 0}
+              </span>
+            </button>
+            {bundleCategories.length > 0 && (
+              <>
+                <div className="mb-2 mt-4 px-3 text-[10px] font-black uppercase tracking-widest text-zinc-400">Categories</div>
+                {bundleCategories.map((cat) => {
+                  const count = (bundles || []).filter((b) => b.category === cat).length;
+                  return (
+                    <button key={cat} onClick={() => onBundleCatSelect(cat)}
+                      className={`flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors ${activeBundleCat === cat ? "bg-indigo-50 font-bold text-indigo-700" : "text-zinc-600 hover:bg-zinc-50"}`}>
+                      <span className="flex-1 text-left">{BUNDLE_CATEGORY_LABELS[cat] || cat}</span>
+                      <span className={`ml-auto shrink-0 rounded-full px-1.5 py-0.5 text-[10px] font-bold tabular-nums ${activeBundleCat === cat ? "bg-indigo-100 text-indigo-700" : "bg-zinc-100 text-zinc-400"}`}>
+                        {count}
+                      </span>
+                    </button>
+                  );
+                })}
+              </>
+            )}
+            <div className="mt-6 border-t border-zinc-100 pt-4">
+              <Link href="/submit-bundle" className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-bold text-indigo-600 hover:bg-indigo-50 transition-colors">
+                + Submit a Pack
+              </Link>
             </div>
-          );
-        })}
+          </>
+        )}
       </div>
     </aside>
   </>
@@ -419,6 +466,7 @@ export default function Library() {
 
   // Bundles (Goal Packs) state
   const [bundles, setBundles] = useState([]);
+  const [activeBundleCat, setActiveBundleCat] = useState(null);
   const [selectedBundle, setSelectedBundle] = useState(null);
   const [bundlePrompts, setBundlePrompts] = useState([]);
   const [loadingBundle, setLoadingBundle] = useState(false);
@@ -621,27 +669,27 @@ export default function Library() {
         })()}
       </Head>
 
-      {activeSection === "prompts" && (
-        <Sidebar
-          activeCat={activeCat}
-          onSelect={handleCatSelect}
-          activeSub={activeSub}
-          onSubSelect={setActiveSub}
-          sidebarOpen={sidebarOpen}
-          setSidebarOpen={setSidebarOpen}
-          categoryCounts={categoryCounts}
-          subcategories={subcategories}
-        />
-      )}
+      <Sidebar
+        activeSection={activeSection}
+        activeCat={activeCat}
+        onSelect={handleCatSelect}
+        activeSub={activeSub}
+        onSubSelect={setActiveSub}
+        sidebarOpen={sidebarOpen}
+        setSidebarOpen={setSidebarOpen}
+        categoryCounts={categoryCounts}
+        subcategories={subcategories}
+        bundles={bundles}
+        activeBundleCat={activeBundleCat}
+        onBundleCatSelect={setActiveBundleCat}
+      />
 
       <div className="flex flex-1 flex-col overflow-hidden">
         {/* Header */}
         <header className="flex h-14 shrink-0 items-center gap-3 border-b-2 border-zinc-200 bg-white px-4">
-          {activeSection === "prompts" && (
-            <button className="rounded-lg p-1.5 text-zinc-500 hover:bg-zinc-100 md:hidden" onClick={() => setSidebarOpen(true)}>
-              <FiMenu size={20} />
-            </button>
-          )}
+          <button className="rounded-lg p-1.5 text-zinc-500 hover:bg-zinc-100 md:hidden" onClick={() => setSidebarOpen(true)}>
+            <FiMenu size={20} />
+          </button>
           <div className="relative flex flex-1">
             {activeSection === "prompts" ? (
               <>
@@ -749,65 +797,69 @@ export default function Library() {
         <main className="flex-1 overflow-y-auto px-4 py-6">
 
           {/* ── Goal Packs section ── */}
-          {activeSection === "bundles" && (
-            <div>
-              <div className="mb-8">
-                <span className="mb-3 inline-flex items-center gap-1.5 rounded-full border-2 border-indigo-200 bg-indigo-50 px-3 py-1 text-xs font-black uppercase tracking-widest text-indigo-600">
-                  Goal Packs
-                </span>
-                <h1 className="text-3xl font-black text-zinc-900 md:text-4xl">Prompts with a purpose.</h1>
-                <p className="mt-2 max-w-xl text-sm text-zinc-500">
-                  Each pack is a curated sequence of prompts built to achieve one specific goal — in order, step by step.
-                </p>
+          {activeSection === "bundles" && (() => {
+            const filteredBundles = activeBundleCat
+              ? bundles.filter((b) => b.category === activeBundleCat)
+              : bundles;
+            return (
+              <div>
+                <div className="mb-6 flex items-baseline gap-3">
+                  <h1 className="text-2xl font-black text-zinc-900">
+                    {activeBundleCat ? (BUNDLE_CATEGORY_LABELS[activeBundleCat] || activeBundleCat) : "🎯 All Goal Packs"}
+                  </h1>
+                  <span className="rounded-full bg-indigo-100 px-2.5 py-0.5 text-sm font-black text-indigo-600 tabular-nums">
+                    {filteredBundles.length}
+                  </span>
+                </div>
+                {bundles.length === 0 ? (
+                  <div className="flex h-48 items-center justify-center">
+                    <div className="h-8 w-8 animate-spin rounded-full border-4 border-zinc-200 border-t-indigo-600" />
+                  </div>
+                ) : (
+                  <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                    {filteredBundles.map((bundle) => (
+                      <motion.button
+                        key={bundle.id}
+                        onClick={() => openBundle(bundle)}
+                        whileHover={{ y: -2 }}
+                        whileTap={{ y: 0 }}
+                        transition={{ duration: 0.12 }}
+                        className="group flex flex-col gap-4 rounded-xl border-2 border-zinc-200 bg-white p-5 text-left transition-all hover:border-indigo-400 hover:shadow-md cursor-pointer"
+                      >
+                        <div className="flex items-start justify-between gap-2">
+                          <span className="text-3xl leading-none">{bundle.icon}</span>
+                          <span className="shrink-0 rounded-full bg-indigo-50 px-2 py-0.5 text-[10px] font-black tabular-nums text-indigo-600">
+                            {bundle.promptCount} prompts
+                          </span>
+                        </div>
+                        <div className="flex-1">
+                          <p className="font-black text-sm text-zinc-900 leading-tight">{bundle.title}</p>
+                          <p className="mt-1.5 text-xs leading-relaxed text-zinc-500 line-clamp-2">{bundle.description}</p>
+                        </div>
+                        {bundle.expert_name ? (
+                          <div className="flex items-center gap-2 border-t border-zinc-100 pt-3">
+                            {bundle.expert_image_url ? (
+                              <img src={bundle.expert_image_url} alt={bundle.expert_name}
+                                className="h-5 w-5 rounded-full object-cover border border-zinc-200 shrink-0" />
+                            ) : (
+                              <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-indigo-600 text-[9px] font-black">
+                                {bundle.expert_name.charAt(0)}
+                              </div>
+                            )}
+                            <p className="text-[11px] text-zinc-500 truncate">by <span className="font-bold text-zinc-700">{bundle.expert_name}</span></p>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-1 text-xs font-bold text-indigo-600">
+                            Start this pack <FiArrowRight size={11} />
+                          </div>
+                        )}
+                      </motion.button>
+                    ))}
+                  </div>
+                )}
               </div>
-              {bundles.length === 0 ? (
-                <div className="flex h-48 items-center justify-center text-zinc-400">
-                  <div className="h-8 w-8 animate-spin rounded-full border-4 border-zinc-200 border-t-indigo-600" />
-                </div>
-              ) : (
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                  {bundles.map((bundle) => (
-                    <motion.button
-                      key={bundle.id}
-                      onClick={() => openBundle(bundle)}
-                      whileHover={{ y: -3 }}
-                      whileTap={{ y: 0 }}
-                      transition={{ duration: 0.12 }}
-                      className="flex flex-col gap-4 rounded-2xl border-2 border-zinc-900 bg-white p-5 text-left shadow-[3px_3px_0px_#18181b] transition-shadow hover:shadow-[5px_5px_0px_#4f46e5]"
-                    >
-                      <div className="flex items-start justify-between gap-2">
-                        <span className="text-4xl leading-none">{bundle.icon}</span>
-                        <span className="shrink-0 rounded-full border border-indigo-200 bg-indigo-50 px-2 py-0.5 text-[10px] font-black tabular-nums text-indigo-600">
-                          {bundle.promptCount} prompts
-                        </span>
-                      </div>
-                      <div className="flex-1">
-                        <p className="font-black text-zinc-900 leading-tight">{bundle.title}</p>
-                        <p className="mt-1.5 text-xs leading-relaxed text-zinc-500">{bundle.description}</p>
-                      </div>
-                      {bundle.expert_name ? (
-                        <div className="flex items-center gap-2 border-t border-zinc-100 pt-3 mt-1">
-                          {bundle.expert_image_url ? (
-                            <img src={bundle.expert_image_url} alt={bundle.expert_name}
-                              className="h-6 w-6 rounded-full object-cover border border-zinc-200 shrink-0" />
-                          ) : (
-                            <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-indigo-600 text-[10px] font-black">
-                              {bundle.expert_name.charAt(0)}
-                            </div>
-                          )}
-                          <p className="text-[11px] text-zinc-500 truncate">by <span className="font-bold text-zinc-700">{bundle.expert_name}</span></p>
-                        </div>
-                      ) : (
-                        <div className="flex items-center gap-1 text-xs font-bold text-indigo-600">
-                          Start this pack <FiArrowRight size={12} />
-                        </div>
-                      )}
-                    </motion.button>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
+            );
+          })()}
 
           {/* ── Prompts section ── */}
           {activeSection === "prompts" && <>
