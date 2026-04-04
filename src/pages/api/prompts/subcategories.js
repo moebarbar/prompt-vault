@@ -3,17 +3,16 @@
  * Returns distinct subcategories for a given category_id.
  */
 
-import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
+import { verifyAuth } from "@/lib/apiAuth";
 
 export default async function handler(req, res) {
   if (req.method !== "GET") {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const supabase = createServerSupabaseClient({ req, res });
-  const { data: { session } } = await supabase.auth.getSession();
-  if (!session) return res.status(401).json({ error: "Unauthorized" });
+  const user = await verifyAuth(req);
+  if (!user) return res.status(401).json({ error: "Unauthorized" });
 
   const { cat } = req.query;
   if (!cat) return res.status(400).json({ error: "cat param required" });

@@ -3,19 +3,14 @@
  * Returns all bundles grouped by status (pending, published, rejected).
  * Admin-only.
  */
-import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
-
-const ADMIN_EMAIL = "moebarbar@hotmail.com";
+import { verifyAdmin } from "@/lib/apiAuth";
 
 export default async function handler(req, res) {
   if (req.method !== "GET") return res.status(405).end();
 
-  const supabase = createServerSupabaseClient({ req, res });
-  const { data: { session } } = await supabase.auth.getSession();
-  if (!session || session.user.email !== ADMIN_EMAIL) {
-    return res.status(403).json({ error: "Forbidden" });
-  }
+  const user = await verifyAdmin(req);
+  if (!user) return res.status(403).json({ error: "Forbidden" });
 
   try {
     const { data: bundles, error } = await supabaseAdmin

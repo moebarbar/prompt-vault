@@ -5,6 +5,7 @@ import { useRouter } from "next/router";
 import { motion, AnimatePresence } from "framer-motion";
 import { FiArrowRight, FiArrowLeft } from "react-icons/fi";
 import { useAuth } from "@/lib/auth";
+import { authFetch } from "@/lib/authFetch";
 import { font } from "@/fonts";
 import { LogoSmall } from "@/components/navigation/Logo";
 import { BundleModal } from "@/components/bundles/BundleModal";
@@ -28,7 +29,7 @@ export default function Bundles() {
   // Fetch bundles
   useEffect(() => {
     if (!user) return;
-    fetch("/api/bundles")
+    authFetch("/api/bundles")
       .then((r) => r.json())
       .then((data) => setBundles(data.bundles || []))
       .catch(() => {})
@@ -40,7 +41,7 @@ export default function Bundles() {
     setSelectedBundle(bundle);
     setBundleError(false);
     try {
-      const res = await fetch(`/api/bundles/${bundle.slug}`);
+      const res = await authFetch(`/api/bundles/${bundle.slug}`);
       const data = await res.json();
       setBundlePrompts(data.prompts || []);
     } catch {

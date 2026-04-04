@@ -20,7 +20,11 @@ export const AuthProvider = ({ children }) => {
       setUser(u);
       // Auto-promote admin email on every sign-in (server sets app_metadata)
       if (u?.email === ADMIN_EMAIL && u?.app_metadata?.role !== "admin") {
-        fetch("/api/admin/promote", { method: "POST" }).catch(() => {});
+        const token = session?.access_token;
+        fetch("/api/admin/promote", {
+          method: "POST",
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        }).catch(() => {});
       }
     });
 

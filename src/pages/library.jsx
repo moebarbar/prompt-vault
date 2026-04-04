@@ -11,6 +11,7 @@ import {
 import { CATEGORIES } from "@/data/prompts";
 import { useAuth } from "@/lib/auth";
 import { useSavedPrompts } from "@/lib/useSavedPrompts";
+import { authFetch } from "@/lib/authFetch";
 import { font } from "@/fonts";
 import { LogoSmall } from "@/components/navigation/Logo";
 import { BundleModal } from "@/components/bundles/BundleModal";
@@ -422,7 +423,7 @@ export default function Library() {
   // Load bundles for home view
   useEffect(() => {
     if (!user) return;
-    fetch("/api/bundles")
+    authFetch("/api/bundles")
       .then((r) => r.json())
       .then((data) => setBundles(data.bundles || []))
       .catch(() => {});
@@ -433,7 +434,7 @@ export default function Library() {
     setSelectedBundle(bundle);
     setBundleError(false);
     try {
-      const res = await fetch(`/api/bundles/${bundle.slug}`);
+      const res = await authFetch(`/api/bundles/${bundle.slug}`);
       const data = await res.json();
       setBundlePrompts(data.prompts || []);
     } catch {
@@ -446,7 +447,7 @@ export default function Library() {
 
   // Load category counts once
   useEffect(() => {
-    fetch("/api/prompts/categories")
+    authFetch("/api/prompts/categories")
       .then((r) => r.json())
       .then((data) => {
         const map = {};
@@ -460,7 +461,7 @@ export default function Library() {
   useEffect(() => {
     Promise.all(
       CATEGORIES.map((cat) =>
-        fetch(`/api/prompts/subcategories?cat=${cat.id}`)
+        authFetch(`/api/prompts/subcategories?cat=${cat.id}`)
           .then((r) => r.json())
           .then((data) => (data.subcategories || []).map((sub) => ({ cat: cat.id, sub })))
           .catch(() => [])
@@ -474,7 +475,7 @@ export default function Library() {
       if (router.query.cat) setActiveCat(router.query.cat);
       if (router.query.prompt) {
         // Auto-open a shared prompt
-        fetch(`/api/prompts/${router.query.prompt}`)
+        authFetch(`/api/prompts/${router.query.prompt}`)
           .then((r) => r.json())
           .then((data) => { if (data.prompt) setSelectedPrompt(data.prompt); })
           .catch(() => {});
@@ -487,7 +488,7 @@ export default function Library() {
     setActiveSub(null);
     setSubcategories([]);
     if (!activeCat) return;
-    fetch(`/api/prompts/subcategories?cat=${activeCat}`)
+    authFetch(`/api/prompts/subcategories?cat=${activeCat}`)
       .then((r) => r.json())
       .then((data) => setSubcategories(data.subcategories || []))
       .catch(() => {});
@@ -509,7 +510,7 @@ export default function Library() {
       params.set("page", pageNum);
       params.set("limit", PAGE_SIZE);
 
-      const res = await fetch(`/api/prompts?${params}`);
+      const res = await authFetch(`/api/prompts?${params}`);
       const data = await res.json();
 
       if (append) {
@@ -860,7 +861,7 @@ export default function Library() {
               <span className="mb-3 text-5xl">{showSavedOnly ? "🔖" : "🔍"}</span>
               <h3 className="text-lg font-bold">{showSavedOnly ? "No saved prompts yet" : "No prompts found"}</h3>
               <p className="mt-1 text-sm text-zinc-500">
-                {showSavedOnly ? "Click the bookmark on any prompt to save it" : `Nothing matched "${search || activeSub}" — try one of these instead`}
+                {showSavedOnly ? "Click the bookmark on any prompt to save it" : `Nothing matched "${search || activeSub || "your search"}" — try one of these instead`}
               </p>
               <button
                 onClick={() => { setSearch(""); setActiveCat(null); setActiveSub(null); setShowSavedOnly(false); }}

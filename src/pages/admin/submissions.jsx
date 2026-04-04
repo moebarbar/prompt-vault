@@ -5,6 +5,7 @@ import { useRouter } from "next/router";
 import { motion, AnimatePresence } from "framer-motion";
 import { FiCheck, FiX, FiArrowLeft, FiExternalLink, FiTwitter, FiLinkedin, FiGlobe } from "react-icons/fi";
 import { useAuth } from "@/lib/auth";
+import { authFetch } from "@/lib/authFetch";
 import { font } from "@/fonts";
 import { LogoSmall } from "@/components/navigation/Logo";
 
@@ -143,7 +144,7 @@ export default function AdminSubmissions() {
 
   useEffect(() => {
     if (!isAdmin) return;
-    fetch("/api/admin/submissions")
+    authFetch("/api/admin/submissions")
       .then((r) => r.json())
       .then((data) => setBundles(data.bundles || []))
       .catch(() => {})
@@ -153,7 +154,7 @@ export default function AdminSubmissions() {
   const handleAction = async (id, action, admin_note = "") => {
     setActionLoading(id);
     try {
-      await fetch(`/api/admin/submissions/${id}`, {
+      await authFetch(`/api/admin/submissions/${id}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action, admin_note }),
