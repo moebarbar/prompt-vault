@@ -21,6 +21,12 @@ const PAGE_SIZE = 48;
 // Precompute category map for quick lookups
 const CAT_MAP = Object.fromEntries(CATEGORIES.map((c) => [c.id, c]));
 
+// ── App sections — add new entries here to scale ──────────────────────────────
+const SECTIONS = [
+  { id: "prompts", icon: "⚡", label: "Prompt Library" },
+  { id: "bundles", icon: "🎯", label: "Goal Packs" },
+];
+
 // ── Quick-start use cases ─────────────────────────────────────────────────────
 const QUICK_STARTS = [
   { label: "Cold Email", icon: "✉️", cat: "sales", sub: "Cold Calling" },
@@ -389,6 +395,8 @@ export default function Library() {
     }
   }, [authLoading, user, router]);
 
+  const [activeSection, setActiveSection] = useState("prompts");
+
   const [activeCat, setActiveCat] = useState(null);
   const [activeSub, setActiveSub] = useState(null);
   const [search, setSearch] = useState("");
@@ -472,6 +480,9 @@ export default function Library() {
   // Sync URL → state on mount
   useEffect(() => {
     if (router.isReady) {
+      if (router.query.section && SECTIONS.find((s) => s.id === router.query.section)) {
+        setActiveSection(router.query.section);
+      }
       if (router.query.cat) setActiveCat(router.query.cat);
       if (router.query.prompt) {
         // Auto-open a shared prompt
@@ -610,65 +621,79 @@ export default function Library() {
         })()}
       </Head>
 
-      <Sidebar
-        activeCat={activeCat}
-        onSelect={handleCatSelect}
-        activeSub={activeSub}
-        onSubSelect={setActiveSub}
-        sidebarOpen={sidebarOpen}
-        setSidebarOpen={setSidebarOpen}
-        categoryCounts={categoryCounts}
-        subcategories={subcategories}
-      />
+      {activeSection === "prompts" && (
+        <Sidebar
+          activeCat={activeCat}
+          onSelect={handleCatSelect}
+          activeSub={activeSub}
+          onSubSelect={setActiveSub}
+          sidebarOpen={sidebarOpen}
+          setSidebarOpen={setSidebarOpen}
+          categoryCounts={categoryCounts}
+          subcategories={subcategories}
+        />
+      )}
 
       <div className="flex flex-1 flex-col overflow-hidden">
         {/* Header */}
         <header className="flex h-14 shrink-0 items-center gap-3 border-b-2 border-zinc-200 bg-white px-4">
-          <button className="rounded-lg p-1.5 text-zinc-500 hover:bg-zinc-100 md:hidden" onClick={() => setSidebarOpen(true)}>
-            <FiMenu size={20} />
-          </button>
+          {activeSection === "prompts" && (
+            <button className="rounded-lg p-1.5 text-zinc-500 hover:bg-zinc-100 md:hidden" onClick={() => setSidebarOpen(true)}>
+              <FiMenu size={20} />
+            </button>
+          )}
           <div className="relative flex flex-1">
-            <div className={`flex w-full items-center gap-2 rounded-xl border-2 bg-zinc-50 px-3 py-1.5 transition-colors ${searchFocused ? "border-indigo-400" : "border-zinc-200"}`}>
-              <FiSearch className="shrink-0 text-zinc-400" size={15} />
-              <input
-                type="text"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                onFocus={() => setSearchFocused(true)}
-                onBlur={() => setSearchFocused(false)}
-                placeholder="Search prompts, categories, topics..."
-                className="flex-1 bg-transparent text-sm outline-none placeholder:text-zinc-400"
-              />
-              {search && <button onClick={() => setSearch("")} className="text-zinc-400 hover:text-zinc-700"><FiX size={14} /></button>}
+            {activeSection === "prompts" ? (
+              <>
+                <div className={`flex w-full items-center gap-2 rounded-xl border-2 bg-zinc-50 px-3 py-1.5 transition-colors ${searchFocused ? "border-indigo-400" : "border-zinc-200"}`}>
+                  <FiSearch className="shrink-0 text-zinc-400" size={15} />
+                  <input
+                    type="text"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    onFocus={() => setSearchFocused(true)}
+                    onBlur={() => setSearchFocused(false)}
+                    placeholder="Search prompts, categories, topics..."
+                    className="flex-1 bg-transparent text-sm outline-none placeholder:text-zinc-400"
+                  />
+                  {search && <button onClick={() => setSearch("")} className="text-zinc-400 hover:text-zinc-700"><FiX size={14} /></button>}
+                </div>
+                <AnimatePresence>
+                  {searchFocused && (
+                    <SearchAutocomplete
+                      search={search}
+                      onCatSelect={(catId) => { handleCatSelect(catId); setSearch(""); }}
+                      onSubSelect={(sub) => setActiveSub(sub)}
+                      onSearchSelect={() => {}}
+                      allSubcategories={allSubcategories}
+                    />
+                  )}
+                </AnimatePresence>
+              </>
+            ) : (
+              <div className="flex items-center gap-2 text-sm font-bold text-zinc-500">
+                <span className="text-xl">🎯</span> Goal Packs — follow a proven sequence of expert prompts
+              </div>
+            )}
+          </div>
+
+          {/* Sort — prompts only */}
+          {activeSection === "prompts" && (
+            <div className="relative hidden sm:block">
+              <select
+                value={sort}
+                onChange={(e) => setSort(e.target.value)}
+                className="appearance-none rounded-xl border-2 border-zinc-200 bg-white pl-3 pr-8 py-1.5 text-xs font-bold text-zinc-600 outline-none hover:border-zinc-300 cursor-pointer"
+              >
+                <option value="relevance">Relevance</option>
+                <option value="alpha">A – Z</option>
+                <option value="newest">Newest</option>
+              </select>
+              <FiChevronDown size={12} className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-400" />
             </div>
-            <AnimatePresence>
-              {searchFocused && (
-                <SearchAutocomplete
-                  search={search}
-                  onCatSelect={(catId) => { handleCatSelect(catId); setSearch(""); }}
-                  onSubSelect={(sub) => setActiveSub(sub)}
-                  onSearchSelect={() => {}}
-                  allSubcategories={allSubcategories}
-                />
-              )}
-            </AnimatePresence>
-          </div>
+          )}
 
-          {/* Sort */}
-          <div className="relative hidden sm:block">
-            <select
-              value={sort}
-              onChange={(e) => setSort(e.target.value)}
-              className="appearance-none rounded-xl border-2 border-zinc-200 bg-white pl-3 pr-8 py-1.5 text-xs font-bold text-zinc-600 outline-none hover:border-zinc-300 cursor-pointer"
-            >
-              <option value="relevance">Relevance</option>
-              <option value="alpha">A – Z</option>
-              <option value="newest">Newest</option>
-            </select>
-            <FiChevronDown size={12} className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-400" />
-          </div>
-
-          {user && (
+          {user && activeSection === "prompts" && (
             <button onClick={() => setShowSavedOnly((v) => !v)}
               className={`flex shrink-0 items-center gap-1.5 rounded-xl border-2 px-3 py-1.5 text-xs font-bold transition-all ${showSavedOnly ? "border-indigo-500 bg-indigo-50 text-indigo-600" : "border-zinc-200 text-zinc-500 hover:border-indigo-300"}`}>
               <FiBookmark size={13} fill={showSavedOnly ? "currentColor" : "none"} />
@@ -697,8 +722,95 @@ export default function Library() {
           </div>
         </header>
 
+        {/* Section nav */}
+        <nav className="flex shrink-0 items-center gap-0.5 border-b-2 border-zinc-200 bg-white px-4">
+          {SECTIONS.map((s) => (
+            <button
+              key={s.id}
+              onClick={() => {
+                setActiveSection(s.id);
+                router.push(`/library?section=${s.id}`, undefined, { shallow: true });
+              }}
+              className={`flex items-center gap-1.5 border-b-2 px-3 py-2.5 text-sm font-bold transition-colors ${
+                activeSection === s.id
+                  ? "border-indigo-600 text-indigo-600"
+                  : "border-transparent text-zinc-500 hover:text-zinc-800"
+              }`}
+            >
+              {s.icon} {s.label}
+            </button>
+          ))}
+          <div className="ml-auto hidden items-center gap-1.5 rounded-full border border-dashed border-zinc-300 px-3 py-1 text-[11px] font-bold text-zinc-400 sm:flex">
+            + More coming soon
+          </div>
+        </nav>
+
         {/* Content */}
         <main className="flex-1 overflow-y-auto px-4 py-6">
+
+          {/* ── Goal Packs section ── */}
+          {activeSection === "bundles" && (
+            <div>
+              <div className="mb-8">
+                <span className="mb-3 inline-flex items-center gap-1.5 rounded-full border-2 border-indigo-200 bg-indigo-50 px-3 py-1 text-xs font-black uppercase tracking-widest text-indigo-600">
+                  Goal Packs
+                </span>
+                <h1 className="text-3xl font-black text-zinc-900 md:text-4xl">Prompts with a purpose.</h1>
+                <p className="mt-2 max-w-xl text-sm text-zinc-500">
+                  Each pack is a curated sequence of prompts built to achieve one specific goal — in order, step by step.
+                </p>
+              </div>
+              {bundles.length === 0 ? (
+                <div className="flex h-48 items-center justify-center text-zinc-400">
+                  <div className="h-8 w-8 animate-spin rounded-full border-4 border-zinc-200 border-t-indigo-600" />
+                </div>
+              ) : (
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  {bundles.map((bundle) => (
+                    <motion.button
+                      key={bundle.id}
+                      onClick={() => openBundle(bundle)}
+                      whileHover={{ y: -3 }}
+                      whileTap={{ y: 0 }}
+                      transition={{ duration: 0.12 }}
+                      className="flex flex-col gap-4 rounded-2xl border-2 border-zinc-900 bg-white p-5 text-left shadow-[3px_3px_0px_#18181b] transition-shadow hover:shadow-[5px_5px_0px_#4f46e5]"
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <span className="text-4xl leading-none">{bundle.icon}</span>
+                        <span className="shrink-0 rounded-full border border-indigo-200 bg-indigo-50 px-2 py-0.5 text-[10px] font-black tabular-nums text-indigo-600">
+                          {bundle.promptCount} prompts
+                        </span>
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-black text-zinc-900 leading-tight">{bundle.title}</p>
+                        <p className="mt-1.5 text-xs leading-relaxed text-zinc-500">{bundle.description}</p>
+                      </div>
+                      {bundle.expert_name ? (
+                        <div className="flex items-center gap-2 border-t border-zinc-100 pt-3 mt-1">
+                          {bundle.expert_image_url ? (
+                            <img src={bundle.expert_image_url} alt={bundle.expert_name}
+                              className="h-6 w-6 rounded-full object-cover border border-zinc-200 shrink-0" />
+                          ) : (
+                            <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-indigo-600 text-[10px] font-black">
+                              {bundle.expert_name.charAt(0)}
+                            </div>
+                          )}
+                          <p className="text-[11px] text-zinc-500 truncate">by <span className="font-bold text-zinc-700">{bundle.expert_name}</span></p>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-1 text-xs font-bold text-indigo-600">
+                          Start this pack <FiArrowRight size={12} />
+                        </div>
+                      )}
+                    </motion.button>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* ── Prompts section ── */}
+          {activeSection === "prompts" && <>
 
           {/* ── Home view: stats + quick starts + category grid ── */}
           {!activeCat && !search && !showSavedOnly && Object.keys(categoryCounts).length > 0 && (
@@ -746,9 +858,12 @@ export default function Library() {
                 <div>
                   <div className="mb-3 flex items-center justify-between">
                     <p className="text-xs font-black uppercase tracking-widest text-zinc-400">Goal Packs — prompts with a purpose</p>
-                    <Link href="/bundles" className="flex items-center gap-1 text-xs font-bold text-indigo-600 hover:underline">
+                    <button
+                      onClick={() => { setActiveSection("bundles"); router.push("/library?section=bundles", undefined, { shallow: true }); }}
+                      className="flex items-center gap-1 text-xs font-bold text-indigo-600 hover:underline"
+                    >
                       See all <FiArrowRight size={11} />
-                    </Link>
+                    </button>
                   </div>
                   <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
                     {bundles.slice(0, 3).map((bundle) => (
@@ -932,6 +1047,8 @@ export default function Library() {
               )}
             </>
           )}
+
+          </>}
         </main>
       </div>
 
