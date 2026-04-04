@@ -6,8 +6,10 @@ import { Logo } from "./Logo";
 import { DesktopLinks } from "./DesktopLinks";
 import { MobileLinks } from "./MobileLinks";
 import { Announcement } from "./Announcement";
+import { useAuth } from "@/lib/auth";
 
 export const ExpandableNavBar = ({ children, links }) => {
+  const { user, loading } = useAuth();
   const [hovered, setHovered] = useState(null);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
@@ -36,18 +38,29 @@ export const ExpandableNavBar = ({ children, links }) => {
               />
             </div>
             <div className="hidden md:flex items-center gap-2">
-              <Link
-                href="/login"
-                className="px-3 py-1.5 text-sm font-bold text-zinc-600 hover:text-indigo-600 transition-colors"
-              >
-                Log in
-              </Link>
-              <Link
-                href="/signup"
-                className="rounded-lg bg-indigo-600 px-3 py-1.5 text-sm font-bold text-white hover:bg-indigo-700 transition-colors"
-              >
-                Sign up free
-              </Link>
+              {!loading && user ? (
+                <Link
+                  href="/library"
+                  className="rounded-lg bg-indigo-600 px-3 py-1.5 text-sm font-bold text-white hover:bg-indigo-700 transition-colors"
+                >
+                  Go to Library →
+                </Link>
+              ) : (
+                <>
+                  <Link
+                    href="/login"
+                    className="px-3 py-1.5 text-sm font-bold text-zinc-600 hover:text-indigo-600 transition-colors"
+                  >
+                    Log in
+                  </Link>
+                  <Link
+                    href="/signup"
+                    className="rounded-lg bg-indigo-600 px-3 py-1.5 text-sm font-bold text-white hover:bg-indigo-700 transition-colors"
+                  >
+                    Sign up free
+                  </Link>
+                </>
+              )}
             </div>
             <button
               onClick={() => setMobileNavOpen((pv) => !pv)}
