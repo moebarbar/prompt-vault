@@ -82,6 +82,71 @@ const faqSchema = {
   })),
 };
 
+// Real bundle examples for the landing page preview
+const PREVIEW_PACKS = [
+  { icon: "🚀", title: "Launch a SaaS in 30 Days", description: "From idea to paying customers in one month", steps: 10 },
+  { icon: "📈", title: "Grow From 0 to 10,000 Followers", description: "The exact system that built accounts from nothing", steps: 10 },
+  { icon: "💼", title: "Close Your First Freelance Client", description: "From unknown to hired in under 30 days", steps: 10 },
+  { icon: "📦", title: "Write and Launch a Digital Product in a Week", description: "From blank page to first sale in 7 days", steps: 10 },
+  { icon: "📧", title: "Get Your First 1,000 Email Subscribers", description: "Build the asset that no algorithm can take away", steps: 10 },
+  { icon: "💰", title: "Raise Your First Round of Funding", description: "From deck to term sheet", steps: 10 },
+];
+
+const GoalPacksPreview = () => (
+  <section className="mx-auto max-w-7xl px-4">
+    <div className="mb-10 text-center">
+      <span className="mb-3 inline-flex items-center gap-1.5 rounded-full border-2 border-indigo-200 bg-indigo-50 px-3 py-1 text-xs font-black uppercase tracking-widest text-indigo-600">
+        Goal Packs
+      </span>
+      <h2 className="text-3xl font-black md:text-5xl">Prompts with a purpose.</h2>
+      <p className="mx-auto mt-3 max-w-xl text-lg text-zinc-500">
+        Each pack is a step-by-step sequence of expert prompts built to achieve one specific goal — in order, from start to finish.
+      </p>
+    </div>
+
+    {/* Cards grid with fade-out reveal */}
+    <div className="relative">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {PREVIEW_PACKS.map((pack, i) => (
+          <div
+            key={pack.title}
+            className={`flex flex-col gap-4 rounded-xl border-2 border-zinc-200 bg-white p-5 transition-all ${i >= 3 ? "opacity-40 blur-[2px]" : ""}`}
+          >
+            <div className="flex items-start justify-between gap-2">
+              <span className="text-3xl leading-none">{pack.icon}</span>
+              <span className="shrink-0 rounded-full bg-indigo-50 px-2 py-0.5 text-[10px] font-black tabular-nums text-indigo-600">
+                {pack.steps} prompts
+              </span>
+            </div>
+            <div className="flex-1">
+              <p className="font-black text-sm text-zinc-900 leading-tight">{pack.title}</p>
+              <p className="mt-1.5 text-xs leading-relaxed text-zinc-500">{pack.description}</p>
+            </div>
+            <div className="flex items-center gap-1 text-xs font-bold text-indigo-600">
+              Start this pack →
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Lock overlay */}
+      <div className="absolute bottom-0 left-0 right-0 flex flex-col items-center justify-end pb-6 pt-32"
+        style={{ background: "linear-gradient(to bottom, transparent, white 60%)" }}>
+        <div className="rounded-2xl border-2 border-zinc-900 bg-white px-8 py-6 text-center shadow-[5px_5px_0px_#18181b]">
+          <p className="text-base font-black text-zinc-900">🔒 Unlock all 29 Goal Packs</p>
+          <p className="mt-1 text-sm text-zinc-500">Free account. No credit card needed.</p>
+          <Link
+            href="/signup"
+            className="mt-4 inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-6 py-3 text-sm font-black text-white hover:bg-indigo-700 transition-colors"
+          >
+            Get free access →
+          </Link>
+        </div>
+      </div>
+    </div>
+  </section>
+);
+
 const CategoriesGrid = () => (
   <section className="mx-auto max-w-7xl px-2 md:px-4">
     <div className="mb-10 text-center">
@@ -163,6 +228,7 @@ export default function Home() {
         <div className="space-y-20 bg-zinc-50 pb-16 pt-16 md:space-y-36 md:pb-24 md:pt-32">
           <Stats />
           <PromptComparison />
+          <GoalPacksPreview />
           <FeatureToggles />
           <CategoriesGrid />
           <FAQ />
