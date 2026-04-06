@@ -798,6 +798,183 @@ Structure:
 
   imagegen: [
     {
+      id: "ad1",
+      title: "Clean Product Hero Shot",
+      description: "Best for E-commerce listings, Google Shopping ads, Facebook carousel ads.",
+      prompt: `Create a professional product advertisement photograph of [PRODUCT].\n\nShot style: Hero product shot, studio photography quality\nBackground: Pure white or very light grey gradient, completely clean\nLighting: Soft diffused studio lighting from the upper left, creating a subtle shadow on the right side that adds depth\nProduct placement: Centered in frame, taking up 60% of the image\nSurface: Product resting on a white reflective surface that shows a soft reflection beneath it\nPerspective: Slightly elevated angle, about 15 degrees above eye level\nPost-processing look: Sharp, crisp, high contrast, colors vivid but natural\nMood: Premium, trustworthy, professional\n\nThe image should look like it belongs on a high-end e-commerce website.\nNo text overlays. No props. Product only.\nAspect ratio: 1:1 square`,
+      tags: ["ad", "ecommerce", "hero"],
+      model: "Gemini",
+      imageUrl: "/examples/clean_hero_earbuds_1775437900869.png"
+    },
+    {
+      id: "ad2",
+      title: "Dramatic Dark Background",
+      description: "Best for Instagram feed ads, premium brand campaigns, beauty products, tech products.",
+      prompt: `Create a dramatic advertising photograph of [PRODUCT].\n\nShot style: Dark studio product photography\nBackground: Deep black or very dark charcoal, smooth and seamless\nLighting: Single dramatic spotlight from above, creating a pool of bright light on the product with the edges fading to darkness. Rim lighting on one edge to define the product's silhouette.\nProduct placement: Slightly off-center, rule-of-thirds composition\nSurface: Dark reflective surface with subtle product reflection\nAccent: Tiny particles of light or dust suspended in the air around the product (optional)\nColor: One accent color — [COLOR] — appearing as a glow or light source behind the product\nMood: Luxurious, powerful, high-end, dramatic\n\nThe image should feel like a movie poster for a premium product.\nNo text. No people.\nAspect ratio: 4:5 for Instagram`,
+      tags: ["ad", "instagram", "premium"],
+      model: "Gemini",
+      imageUrl: "/examples/dramatic_dark_earbuds_1775437912199.png"
+    },
+    {
+      id: "ad3",
+      title: "Flat Lay Arrangement",
+      description: "Best for Pinterest ads, Instagram organic, lifestyle brands, beauty and wellness.",
+      prompt: `Create a beautiful flat lay advertisement photograph featuring [PRODUCT] as the hero item.\n\nShot style: Top-down flat lay, editorial magazine style\nBackground: [Choose one: Marble surface / Linen fabric / Natural wood / Pastel colored paper]\nLayout: [PRODUCT] positioned as the focal point in the center or upper-center. Surrounded by 4-6 complementary props that tell a lifestyle story (fresh flowers, small plants, coffee cup, notebook, or other items relevant to the product category). Empty space in one corner for text overlay.\nLighting: Bright, natural daylight look. Even lighting with no harsh shadows. Soft and airy.\nColor palette: Cohesive color story — all props and background share [COLOR] tones\nStyling: Each item placed with intention. Some items slightly overlapping. Organic, curated feel.\nMood: Aspirational, beautiful, covetable, lifestyle-forward\n\nThe image should look like it belongs in a premium lifestyle magazine spread.\nAspect ratio: 1:1 or 4:5`,
+      tags: ["ad", "pinterest", "lifestyle"],
+      model: "Gemini",
+      imageUrl: "/examples/flat_lay_earbuds_1775437923676.png"
+    },
+    {
+      id: "ad4",
+      title: "Floating Shot",
+      description: "Best for Social media ads, tech products, innovative brands, attention-grabbing campaigns.",
+      prompt: `Create a visually striking advertisement photograph of [PRODUCT] appearing to float or levitate.\n\nShot style: Conceptual product photography, CGI-quality realism\nBackground: Clean [BACKGROUND COLOR] gradient — light to slightly darker version of the same color\nEffect: [PRODUCT] suspended in mid-air at a dynamic angle, as if just tossed upward and caught in perfect position\nShadows: Soft shadow directly below the product on an invisible surface, confirming the levitation\nLighting: Clean studio lighting, product perfectly lit from multiple angles\nAdditional visual: Subtle motion lines or small particles radiating outward from the product, suggesting energy or movement\nColor: Product colors are vivid and saturated against the clean background\nMood: Dynamic, innovative, modern, eye-catching\n\nThe image should make someone pause their scroll immediately.\nNo people. No props.\nAspect ratio: 1:1 or 9:16 for Stories`,
+      tags: ["ad", "tech", "innovative"],
+      model: "Gemini",
+      imageUrl: "/examples/floating_earbuds_1775437935512.png"
+    },
+    {
+      id: "ad5",
+      title: "Lifestyle In-Use Shot",
+      description: "Best for Facebook and Instagram ads, brand awareness, relatability-focused campaigns.",
+      prompt: `Create a lifestyle advertisement photograph showing a person using [PRODUCT].\n\nPerson: [DESCRIBE: A young professional woman in her late 20s / A fit man in his 30s / A diverse group of friends] — looking natural, not posed. Authentic expression, genuine emotion.\nSetting: [ENVIRONMENT: Modern home interior / Coffee shop / Outdoor park / Urban street / Gym] — environment feels real and lived-in, not staged\nAction: The person is actively using [PRODUCT] in a natural, everyday moment. Mid-action. Not looking at the camera.\nLighting: Natural light — golden hour outdoor light or soft window light indoors. Warm tones.\nPhotography style: Candid documentary style. Shallow depth of field with background softly blurred. Subject in sharp focus.\nColor grade: Warm, natural film-like color grading. Slightly desaturated but rich. Like a high-quality Instagram photo.\nMood: Authentic, aspirational, relatable, real-life beautiful\n\nThe person should look like someone the viewer wants to be — not a model in a studio.\nThe product should be clearly visible and recognizable.\nAspect ratio: 4:5`,
+      tags: ["ad", "lifestyle", "authentic"],
+      model: "Gemini",
+      imageUrl: "/examples/lifestyle_inuse_earbuds_1775437949668.png"
+    },
+    {
+      id: "ad6",
+      title: "Hands-Only Shot",
+      description: "Best for E-commerce, food and beverage, beauty, product focus campaigns.",
+      prompt: `Create an advertisement photograph showing hands interacting with [PRODUCT].\n\nHands: Beautiful, well-groomed hands. Natural skin tone. [Optional: painted nails in [COLOR] / simple clean nails]. No jewelry unless it complements the product.\nAction: Hands gently holding / opening / using / presenting [PRODUCT] in the most visually appealing way possible.\nBackground: Clean, simple — [BACKGROUND: white marble / natural wood surface / solid [COLOR] background]\nLighting: Soft, even light from above. Makes the skin look warm and the product look its best.\nFraming: Hands fill approximately 60-70% of the frame. Product is clearly visible and in focus.\nStyle: Clean, editorial, aspirational. Like a high-end beauty campaign.\nColor: The skin tone and product colors are the only colors in the frame. Everything else is neutral.\nMood: Tactile, inviting, premium, personal\n\nThe image should make the viewer want to reach out and touch the product.\nAspect ratio: 1:1 or 4:5`,
+      tags: ["ad", "beauty", "tactile"],
+      model: "Gemini",
+      imageUrl: "/examples/hands_only_earbuds_1775437977541.png"
+    },
+    {
+      id: "ad7",
+      title: "Before-and-After Split Frame",
+      description: "Best for Health and wellness, beauty, home improvement, transformation products.",
+      prompt: `Create a before-and-after advertisement image for [PRODUCT].\n\nLayout: Split frame — left side shows BEFORE / right side shows AFTER\nDivider: Clean vertical line or soft blend in the center separating the two sides\nBEFORE SIDE: [Describe the problem state — dull / messy / difficult / less optimal version of whatever the product improves]\nAFTER SIDE: [Describe the improved state — vibrant / clean / easy / better version after using the product]\nStyle: Both sides use identical framing, lighting, and angle — only the result changes. This makes the transformation obvious.\nText space: Small label in the top corners — "Before" on the left, "After" on the right, in a clean sans-serif font\nColor: Before side is slightly cooler and more desaturated. After side is warmer, brighter, more saturated.\nMood: Convincing, clear, transformative, credible\n\nThe transformation should be dramatic but believable — not impossible.\nAspect ratio: 16:9 horizontal or 1:1`,
+      tags: ["ad", "transformation", "before-after"],
+      model: "Gemini",
+      imageUrl: "/examples/before_after_earbuds_1775437990523.png"
+    },
+    {
+      id: "ad8",
+      title: "Product in Natural Environment",
+      description: "Best for Outdoor brands, food and beverage, sustainability brands, adventure products.",
+      prompt: `Create a lifestyle advertisement photograph of [PRODUCT] placed in a beautiful natural environment.\n\nSetting: [ENVIRONMENT: Dense green forest / Sandy beach at golden hour / Snow-covered mountain landscape / Lush tropical setting / Rustic countryside field]\nProduct placement: [PRODUCT] is placed naturally within the environment — resting on a rock, sitting on a wooden surface, held by invisible hands, or positioned in the foreground with the landscape stretching behind it\nLighting: Natural golden hour or blue hour light. Dramatic, atmospheric, cinematic.\nDepth: Product in sharp focus in the foreground. Background environment slightly blurred but clearly recognizable and beautiful.\nColor: Rich, saturated natural colors. Deep greens, warm golds, soft blues — whichever matches the environment.\nMood: Adventurous, free, natural, premium, wanderlust-inducing\n\nThe product should look like it belongs in this world.\nThe image should make the viewer feel something — wanderlust, freedom, calm, or excitement.\nAspect ratio: 16:9 or 4:5`,
+      tags: ["ad", "outdoor", "wanderlust"],
+      model: "Gemini",
+      imageUrl: "/examples/nature_earbuds_1775438001909.png"
+    },
+    {
+      id: "ad9",
+      title: "Instagram Story Ad",
+      description: "Best for Instagram Stories ads, TikTok ads, Snapchat ads, Reels covers.",
+      prompt: `Create a full-screen vertical advertisement graphic for [PRODUCT] designed for Instagram Stories.\n\nFormat: 9:16 vertical (1080 x 1920 pixels proportions)\nLayout structure:\n  - Top 20%: Brand logo area — clean, white or [COLOR] logo space\n  - Middle 60%: Hero visual — [PRODUCT] as the dominant element, styled beautifully\n  - Bottom 20%: Call-to-action area — space for text like "Shop Now" or "Learn More"\n\nHero visual style: [PRODUCT] photographed or rendered against [BACKGROUND COLOR] background. Product takes up most of the middle section. Dramatically lit.\nColor palette: [COLOR] as primary, white as secondary, one neutral as tertiary\nDesign elements: Simple, bold geometric shapes in [COLOR] framing the product. Clean modern typography space.\nMood: Bold, scroll-stopping, visually immediate\n\nThe image must work at phone-screen size — no small details that get lost.\nText areas are empty — design the layout for text to be added.\nAspect ratio: 9:16 vertical`,
+      tags: ["ad", "instagram-story", "vertical"],
+      model: "Gemini",
+      imageUrl: "/examples/ig_story_ad_earbuds_1775438013625.png"
+    },
+    {
+      id: "ad10",
+      title: "Facebook Feed Ad (Horizontal)",
+      description: "Best for Facebook feed ads, Google Display ads, LinkedIn sponsored content.",
+      prompt: `Create a horizontal social media advertisement image for [PRODUCT] designed for Facebook feed.\n\nFormat: 16:9 or 1.91:1 horizontal\nLayout: Split composition — left 55% is the visual, right 45% is the message area\nLEFT SIDE (visual):\n  - [PRODUCT] beautifully photographed or styled\n  - Clean background in [BRAND COLOR] or white\n  - Product takes up 70% of the left panel\n  - Professional studio lighting\nRIGHT SIDE (message area):\n  - Clean white or [COLOR] background\n  - Space for headline text at top\n  - Space for subheadline or benefit text in middle\n  - Space for CTA button at bottom\n  - All text areas are empty — this is the design template\nDividing element: Clean vertical line or soft gradient transition between sides\nOverall mood: Professional, trustworthy, clear, direct\n\nThe design should look like a premium brand's paid social ad.\nAll text areas are blank — create the layout structure only.\nAspect ratio: 16:9`,
+      tags: ["ad", "facebook", "horizontal"],
+      model: "Gemini",
+      imageUrl: "/examples/fb_feed_ad_earbuds_1775438029273.png"
+    },
+    {
+      id: "ad11",
+      title: "Carousel Ad Card",
+      description: "Best for Facebook and Instagram carousel ads, product feature showcases.",
+      prompt: `Create a single carousel ad card for [PRODUCT] highlighting one specific product feature.\n\nFormat: 1:1 square\nDesign style: Bold, graphic, modern — designed to be swiped through in a carousel sequence\nBackground: Solid [COLOR] background — rich, saturated, eye-catching\nProduct: [PRODUCT] displayed prominently. Either the full product or a close-up detail showing the specific feature being highlighted.\nFeature callout: A graphic element (arrow, line, circle) pointing to or highlighting the specific feature area of the product. Space for a short label like "Ultra-Light Design" or "48-Hour Battery" next to the callout.\nTypography area: Top of the card has space for the feature headline. Bottom has space for a brief description.\nNumber indicator: Small "1 of 5" style indicator in corner showing this is part of a series.\nMood: Informative, premium, clean, modern\n\nAll text spaces are empty — design the layout and visual hierarchy only.\nAspect ratio: 1:1 square`,
+      tags: ["ad", "carousel", "features"],
+      model: "Gemini",
+      imageUrl: "/examples/carousel_ad_earbuds_1775438057733.png"
+    },
+    {
+      id: "ad12",
+      title: "UGC-Style Ad",
+      description: "Best for Facebook, Instagram, TikTok — high-converting ad format that feels organic.",
+      prompt: `Create a UGC-style (user-generated content) advertisement photograph featuring [PRODUCT].\n\nStyle: This should look like a real person took this photo on their phone, NOT a professional studio shot\nSetting: A real home environment — kitchen counter, bathroom shelf, bedroom dresser, living room table, or wherever this product is naturally used\nLighting: Imperfect natural light — window light, slightly uneven, realistic. Not studio perfect.\nProduct: [PRODUCT] is in the photo naturally, as if someone just pulled it out to show their followers. Maybe partially used. Not pristine.\nComposition: Slightly imperfect framing — not perfectly centered. A thumb might be visible at the edge. Background is real and lived-in.\nPhone frame: Optional — a subtle iPhone screenshot frame around the image, including the Instagram or TikTok interface elements (profile picture, username, like/comment buttons) to make it look like a real social post\nPerson element: Optional — a partial hand or arm visible, like someone is holding or pointing to the product\nMood: Authentic, relatable, trustworthy, "my friend recommended this"\n\nThe image should NOT look like an advertisement.\nThat is the entire point — it should feel real.\nAspect ratio: 9:16 or 4:5`,
+      tags: ["ad", "ugc", "authentic"],
+      model: "Gemini",
+      imageUrl: "/examples/ugc_style_earbuds_1775438069721.png"
+    },
+    {
+      id: "ad13",
+      title: "Sale Announcement Ad",
+      description: "Best for Black Friday, seasonal sales, flash sales, promotional campaigns.",
+      prompt: `Create a high-impact promotional advertisement image for [PRODUCT] announcing a sale.\n\nDesign style: Bold, energetic, attention-commanding — this is a sale announcement\nBackground: Deep [COLOR — red / black / navy / orange] or a bold gradient from [COLOR 1] to [COLOR 2]\nProduct: [PRODUCT] featured prominently, photographed cleanly against the bold background\nSale elements: Large bold "SALE" or percentage discount badge in the design — bright contrasting color (yellow, white, or neon against the dark background). Badge style: circular stamp, explosive starburst, or bold rectangle.\nLayout: Product on one side, sale information area on the other. Clear visual hierarchy.\nUrgency element: Design includes a countdown-style element or "Limited Time" badge\nTypography areas:\n  - HEADLINE SPACE: Large, bold — space for "50% OFF" or similar\n  - SUBHEADLINE SPACE: Medium — space for the product name or offer detail\n  - CTA SPACE: Bottom — space for "Shop Now" button\nColor contrast: Maximum contrast for visibility. Should be readable as a thumbnail.\nMood: Urgent, exciting, too-good-to-miss\n\nAll text areas are empty — design the visual layout only.\nAspect ratio: 1:1 or 4:5`,
+      tags: ["ad", "sale", "promo"],
+      model: "Gemini",
+      imageUrl: "/examples/sale_ad_earbuds_1775438082327.png"
+    },
+    {
+      id: "ad14",
+      title: "Bundle or Multi-Product Ad",
+      description: "Best for E-commerce upsells, gift sets, value bundles, kit promotions.",
+      prompt: `Create an advertisement image showing [PRODUCT] as part of a product bundle or collection.\n\nLayout: 3-5 products arranged in a beautiful flat lay or studio arrangement\nHero product: [PRODUCT] is the largest and most prominently placed — center or front\nSupporting products: 2-4 complementary products arranged around the hero\nArrangement style: [Choose: Organized grid layout / Organic scattered arrangement / Stacked or layered arrangement]\nBackground: Clean white or light neutral — lets the products be the focus\nLighting: Even, bright studio lighting on all products. No product is in shadow.\nConnection element: A subtle design element tying all products together — matching ribbon, same label color family, or a contained frame\nValue proposition space: One corner cleared for text like "Complete Kit" or "Everything You Need" or "Save 30% on the Bundle"\nMood: Generous, great value, complete, gift-worthy\n\nThis should feel like the most complete version of this product category.\nAll text areas are empty.\nAspect ratio: 1:1 or 16:9`,
+      tags: ["ad", "bundle", "value"],
+      model: "Gemini",
+      imageUrl: "/examples/bundle_ad_earbuds_1775438098646.png"
+    },
+    {
+      id: "ad15",
+      title: "Free Shipping Offer Ad",
+      description: "Best for E-commerce, SaaS, subscription products, first-purchase campaigns.",
+      prompt: `Create a clean advertisement image for [PRODUCT] featuring a risk-free offer.\n\nDesign style: Clean, trustworthy, reassuring — this ad is about removing fear of buying\nBackground: Soft, light background — white, very light grey, or pale [COLOR]\nProduct: [PRODUCT] featured cleanly and professionally\nTrust icons: Design includes 3 small icon areas representing:\n  Icon 1: Free shipping (truck or package icon)\n  Icon 2: Money-back guarantee (shield or checkmark icon)\n  Icon 3: Easy returns or risk-free trial (arrow cycle icon)\nIcon style: Simple line-art icons, clean and professional\nLayout: Product takes up left 60%, trust icons arranged vertically or horizontally on the right or below\nColor: [BRAND COLOR] used as accent on icons and highlights only. Rest is clean and minimal.\nHeadline space: Top of image, space for "Try Risk-Free" or "Free Shipping on Orders Over $X"\nMood: Safe, trustworthy, confident, generous, welcoming\n\nThis ad should make someone feel comfortable clicking — not pressured.\nAll text areas are empty.\nAspect ratio: 1:1 or 16:9`,
+      tags: ["ad", "offer", "trust"],
+      model: "Gemini",
+      imageUrl: "/examples/free_shipping_ad_1775438109819.png"
+    },
+    {
+      id: "ad16",
+      title: "Aspirational Lifestyle Ad",
+      description: "Best for Premium brands, luxury products, aspirational campaigns, brand awareness.",
+      prompt: `Create an aspirational lifestyle advertisement image for [PRODUCT].\n\nConcept: Do not show the product being used — show the LIFE that comes with using it\nScene: A beautiful aspirational moment — [CHOOSE: A perfectly styled home with morning light streaming through windows / A rooftop terrace overlooking a city at sunset / A pristine beach at golden hour / A beautiful mountain viewpoint at dawn]\nPerson (optional): One person in the scene, from behind or at a distance — the viewer should be able to put themselves in the scene. They look happy, successful, at peace.\nProduct: [PRODUCT] is visible but secondary — it is part of the scene, not the focus. Perhaps on a table nearby, in someone's hand, or subtly placed.\nPhotography: Cinematic, wide angle or medium shot. Professional color grading. Golden, warm tones.\nMood: Deeply aspirational. "This is the life I want." The product is the gateway to this feeling.\nColor: Warm, golden, filmic. Rich without being oversaturated.\n\nThe viewer should feel the emotion first and notice the product second.\nAspect ratio: 16:9 or 4:5`,
+      tags: ["ad", "aspirational", "lifestyle"],
+      model: "Gemini",
+      imageUrl: "/examples/aspirational_lifestyle_earbuds_1775438147461.png"
+    },
+    {
+      id: "ad17",
+      title: "Problem-Solution Contrast Ad",
+      description: "Best for Health and wellness, productivity tools, cleaning products, anything solving a pain point.",
+      prompt: `Create a split-frame problem-solution advertisement image for [PRODUCT].\n\nLayout: Two side-by-side panels of equal size\nLEFT PANEL — THE PROBLEM:\n  - Color grade: Desaturated, slightly cold, grey tones\n  - Visual: A scene showing the frustrating situation BEFORE the product — messy, difficult, stressful, painful\n  - Optional: A person looking frustrated or struggling\n  - Mood: Tension, discomfort, frustration\n  - Small label space: "Before" or a frown icon\n\nRIGHT PANEL — THE SOLUTION:\n  - Color grade: Warm, bright, saturated, vibrant\n  - Visual: The same scene AFTER using [PRODUCT] — clean, easy, beautiful, successful\n  - [PRODUCT] is visible and clearly responsible for the improvement\n  - Optional: Same person looking relieved, happy, satisfied\n  - Mood: Relief, joy, success\n  - Small label space: "After" or a checkmark icon\n\nDividing element: A clean vertical line or a subtle arrow pointing from left to right\nOverall composition: Both panels use identical framing and angle — only the situation changes\nText space: Bottom banner across both panels for headline text\n\nThe contrast should be immediately obvious and emotionally impactful.\nAspect ratio: 1:1 or 16:9`,
+      tags: ["ad", "problem-solution", "contrast"],
+      model: "Gemini",
+      imageUrl: "/examples/problem_solution_earbuds_1775438160645.png"
+    },
+    {
+      id: "ad18",
+      title: "Testimonial / Social Proof Ad",
+      description: "Best for Retargeting campaigns, trust-building ads, converting warm audiences.",
+      prompt: `Create a testimonial-style advertisement image for [PRODUCT].\n\nLayout: Clean, editorial design — feels like a magazine quote feature\nBackground: Soft neutral — warm white, light cream, or very light [COLOR]\nProduct: [PRODUCT] photographed cleanly and placed on one side (left or right) — takes up 35% of the frame\nTestimonial block: The other 65% of the frame contains:\n  - Large opening quotation mark in [BRAND COLOR] — decorative and large\n  - Empty space for the testimonial text (3-4 lines)\n  - Below the quote: small avatar circle placeholder for customer photo\n  - Customer name space and star rating (5 stars in [COLOR])\nDesign style: Elegant, trustworthy, editorial — like a high-end brand's website testimonial section\nRating element: 5 gold or [COLOR] stars prominently displayed\nVerified badge: Small "Verified Purchase" or "Real Customer" badge in corner\nMood: Credible, warm, trustworthy, human, reassuring\n\nThe design should make the testimonial feel real and significant — not like a fake review.\nAll text spaces are empty — only show the visual layout.\nAspect ratio: 4:5 or 1:1`,
+      tags: ["ad", "testimonial", "social-proof"],
+      model: "Gemini"
+    },
+    {
+      id: "ad19",
+      title: "Product Close-Up Detail Shot",
+      description: "Best for Quality showcase, premium positioning, materials and craftsmanship emphasis.",
+      prompt: `Create an extreme close-up advertisement photograph of [PRODUCT] highlighting its quality and craftsmanship.\n\nShot type: Macro or extreme close-up — fill the entire frame with the product detail\nFocus area: The most impressive, beautiful, or quality-demonstrating part of [PRODUCT] — the texture / material / finish / intricate detail / precision engineering\nDepth of field: Very shallow — the focal point is razor sharp, everything else falls into beautiful blur\nLighting: Dramatic side lighting that rakes across the surface, revealing texture and depth\nBackground: The rest of the product itself, beautifully blurred into an abstract [COLOR] bokeh\nColor: Rich, accurate material colors — let the material beauty speak for itself\nDetail reveal: The image should reveal something about the product that you would miss at normal viewing distance\nMood: Premium, meticulous, quality-obsessed, artisanal\n\nThis image communicates "this product is made better than you realize."\nNo text. No props. Pure product detail.\nAspect ratio: 1:1`,
+      tags: ["ad", "close-up", "detail"],
+      model: "Gemini"
+    },
+    {
+      id: "ad20",
+      title: "Product Comparison (Us vs Them)",
+      description: "Best for Competitive categories, switching campaigns, differentiation from generic alternatives.",
+      prompt: `Create a product comparison advertisement image featuring [PRODUCT] versus a generic alternative.\n\nLayout: Two-column comparison design\nLEFT COLUMN — COMPETITOR / GENERIC:\n  - Header: "Other Brands" or "The Old Way"\n  - Visual: A generic, unbranded version of the product category — looks ordinary, cheap, or dated\n  - Below visual: 3-4 checkboxes with X marks (red) next to empty text areas\n  - Color treatment: Slightly desaturated, cooler tones\n  - Background: Light grey\n\nRIGHT COLUMN — [PRODUCT]:\n  - Header: [PRODUCT NAME SPACE] or "The Better Way"\n  - Visual: [PRODUCT] looking premium, clean, and impressive — identical framing to the left side but clearly superior\n  - Below visual: 3-4 checkboxes with checkmarks (green or [BRAND COLOR]) next to empty text areas\n  - Color treatment: Warm, vibrant, full color\n  - Background: White or very light [BRAND COLOR]\n\nDividing element: "VS" in a bold circle between the two columns\nWinner indicator: Subtle highlight, glow, or badge on the right column indicating it is the winner\nText areas: All feature text spaces are empty — only show the comparison layout structure\nOverall style: Clean, infographic-style, immediately readable\nMood: Confident, factual, clearly superior\n\nAspect ratio: 1:1 or 16:9`,
+      tags: ["ad", "comparison", "us-vs-them"],
+      model: "Gemini"
+    },
+    {
       id: "ig1",
       title: "Midjourney Prompt Builder",
       description: "Build detailed Midjourney prompts for any style or concept",

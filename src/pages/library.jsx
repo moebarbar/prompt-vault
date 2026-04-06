@@ -164,6 +164,11 @@ const PromptCard = ({ prompt, onOpen, savedIds, onToggleSave, user }) => {
       className="group flex flex-col rounded-xl border-2 border-zinc-200 bg-white p-5 transition-all hover:border-indigo-400 hover:shadow-md cursor-pointer"
       onClick={() => onOpen(prompt)}
     >
+      {prompt.imageUrl && (
+        <div className="mb-3 w-full overflow-hidden rounded-lg border border-zinc-200">
+          <img src={prompt.imageUrl} alt={prompt.title} className="aspect-video w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+        </div>
+      )}
       <div className="mb-3 flex items-start justify-between gap-2">
         <h3 className="text-sm font-bold leading-snug line-clamp-2">{prompt.title}</h3>
         <div className="flex shrink-0 items-center gap-1">
@@ -237,6 +242,11 @@ const PromptModal = ({ prompt, onClose, savedIds, onToggleSave, user }) => {
         </div>
         <h2 className="mb-1 text-xl font-black">{prompt.title}</h2>
         <p className="mb-4 text-sm text-zinc-500">{prompt.description}</p>
+        {prompt.imageUrl && (
+          <div className="mb-4 w-full overflow-hidden rounded-xl border-2 border-zinc-200 bg-zinc-50 p-2 flex justify-center">
+            <img src={prompt.imageUrl} alt={prompt.title} className="max-h-[350px] w-auto object-contain rounded-lg shadow-sm" />
+          </div>
+        )}
         <div className="mb-4 max-h-64 overflow-y-auto rounded-xl border-2 border-zinc-200 bg-zinc-50 p-4">
           <pre className="whitespace-pre-wrap font-sans text-xs leading-relaxed text-zinc-700">{prompt.prompt}</pre>
         </div>
