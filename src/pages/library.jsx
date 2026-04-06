@@ -8,7 +8,7 @@ import {
   FiMenu, FiLogOut, FiUser, FiShare2,
   FiChevronDown, FiArrowRight, FiZap,
 } from "react-icons/fi";
-import { CATEGORIES } from "@/data/prompts";
+import { CATEGORIES, PROMPTS } from "@/data/prompts";
 import { useAuth } from "@/lib/auth";
 import { useSavedPrompts } from "@/lib/useSavedPrompts";
 import { authFetch } from "@/lib/authFetch";
@@ -25,6 +25,17 @@ const CAT_MAP = Object.fromEntries(CATEGORIES.map((c) => [c.id, c]));
 const SECTIONS = [
   { id: "prompts", icon: "⚡", label: "Prompt Library" },
   { id: "bundles", icon: "🎯", label: "Goal Packs" },
+  { id: "images", icon: "🎨", label: "Image Prompts" },
+];
+
+// ── Image prompt tags for sidebar filter ──────────────────────────────────────
+const IMAGE_FILTER_TAGS = [
+  { id: null, label: "All Image Prompts" },
+  { id: "ad", label: "Ad Creative" },
+  { id: "ecommerce", label: "E-Commerce" },
+  { id: "lifestyle", label: "Lifestyle" },
+  { id: "instagram", label: "Instagram" },
+  { id: "midjourney", label: "Midjourney / AI Art" },
 ];
 
 // ── Quick-start use cases ─────────────────────────────────────────────────────
@@ -305,6 +316,93 @@ const GroupedGrid = ({ prompts, onOpen, savedIds, onToggleSave, user }) => {
   );
 };
 
+// ── Image Prompt Card ─────────────────────────────────────────────────────────
+const ImagePromptCard = ({ prompt, onOpen }) => (
+  <motion.div
+    layout
+    initial={{ opacity: 0, y: 12 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.15 }}
+    className="group flex flex-col rounded-xl border-2 border-zinc-200 bg-white overflow-hidden transition-all hover:border-indigo-400 hover:shadow-md cursor-pointer"
+    onClick={() => onOpen(prompt)}
+  >
+    {prompt.imageUrl ? (
+      <div className="relative h-44 overflow-hidden bg-zinc-100">
+        <img
+          src={prompt.imageUrl}
+          alt={prompt.title}
+          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+      </div>
+    ) : (
+      <div className="flex h-44 items-center justify-center bg-gradient-to-br from-indigo-50 to-purple-50">
+        <span className="text-5xl">🎨</span>
+      </div>
+    )}
+    <div className="p-4">
+      <h3 className="font-bold text-sm text-zinc-900 leading-snug line-clamp-2">{prompt.title}</h3>
+      <p className="mt-1 text-xs text-zinc-500 line-clamp-2">{prompt.description}</p>
+      <div className="mt-3 flex flex-wrap gap-1">
+        {(prompt.tags || []).slice(0, 3).map((tag) => (
+          <span key={tag} className="rounded-full bg-indigo-50 px-2 py-0.5 text-[10px] font-bold text-indigo-600">{tag}</span>
+        ))}
+      </div>
+    </div>
+  </motion.div>
+);
+
+// ── Image Prompt Modal ────────────────────────────────────────────────────────
+const ImagePromptModal = ({ prompt, onClose }) => {
+  const [copied, setCopied] = useState(false);
+  const handleCopy = () => {
+    navigator.clipboard.writeText(prompt.prompt);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" onClick={onClose}>
+      <motion.div
+        initial={{ opacity: 0, scale: 0.97, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, y: 40 }}
+        transition={{ duration: 0.2, ease: "easeOut" }}
+        className="relative flex w-full max-w-2xl flex-col gap-4 rounded-2xl border-2 border-zinc-900 bg-white p-6 shadow-[8px_8px_0px_#18181b] max-h-[90vh] overflow-y-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button onClick={onClose} className="absolute right-4 top-4 rounded-lg p-1.5 text-zinc-400 hover:bg-zinc-100"><FiX size={18} /></button>
+        {prompt.imageUrl && (
+          <div className="overflow-hidden rounded-xl border-2 border-zinc-200">
+            <img src={prompt.imageUrl} alt={prompt.title} className="w-full object-cover max-h-72" />
+          </div>
+        )}
+        <div className="flex flex-wrap gap-1">
+          {(prompt.tags || []).map((tag) => (
+            <span key={tag} className="rounded-full bg-indigo-50 px-2 py-0.5 text-[10px] font-bold text-indigo-600">{tag}</span>
+          ))}
+        </div>
+        <div>
+          <h2 className="text-xl font-black text-zinc-900">{prompt.title}</h2>
+          <p className="mt-1 text-sm text-zinc-500">{prompt.description}</p>
+        </div>
+        <div className="max-h-56 overflow-y-auto rounded-xl border-2 border-zinc-200 bg-zinc-50 p-4">
+          <pre className="whitespace-pre-wrap font-sans text-xs leading-relaxed text-zinc-700">{prompt.prompt}</pre>
+        </div>
+        <div className="flex items-center justify-between gap-3">
+          <button
+            onClick={handleCopy}
+            className={`flex flex-1 items-center justify-center gap-2 rounded-xl py-3 text-sm font-bold transition-all ${copied ? "bg-green-500 text-white" : "bg-indigo-600 text-white hover:bg-indigo-700"}`}
+          >
+            {copied ? <FiCheck size={15} /> : <FiCopy size={15} />}
+            {copied ? "Copied!" : "Copy prompt"}
+          </button>
+          <span className="text-xs text-zinc-400 shrink-0">Works with: {prompt.model}</span>
+        </div>
+      </motion.div>
+    </div>
+  );
+};
+
 // ── Sidebar ───────────────────────────────────────────────────────────────────
 const BUNDLE_CATEGORY_LABELS = {
   startup: "🚀 Startup", growth: "📈 Growth", freelancing: "💼 Freelancing",
@@ -317,6 +415,7 @@ const Sidebar = ({
   activeSection, activeCat, onSelect, activeSub, onSubSelect,
   sidebarOpen, setSidebarOpen, categoryCounts, subcategories,
   bundles, activeBundleCat, onBundleCatSelect,
+  activeImageTag, onImageTagSelect,
 }) => {
   const grandTotal = Object.values(categoryCounts).reduce((a, b) => a + b, 0);
   const bundleCategories = [...new Set((bundles || []).map((b) => b.category).filter(Boolean))];
@@ -336,6 +435,14 @@ const Sidebar = ({
               {grandTotal > 0 ? grandTotal.toLocaleString() : "…"}
             </p>
             <p className="text-[10px] text-indigo-400">{CATEGORIES.length} categories</p>
+          </>
+        ) : activeSection === "images" ? (
+          <>
+            <p className="text-[10px] font-black uppercase tracking-widest text-indigo-400">Image Prompts</p>
+            <p className="text-2xl font-black text-indigo-600 tabular-nums">
+              {(PROMPTS.imagegen || []).length}
+            </p>
+            <p className="text-[10px] text-indigo-400">ad, product & AI image prompts</p>
           </>
         ) : (
           <>
@@ -399,6 +506,22 @@ const Sidebar = ({
                 </div>
               );
             })}
+          </>
+        ) : activeSection === "images" ? (
+          <>
+            <p className="mb-2 px-3 text-[10px] font-black uppercase tracking-widest text-zinc-400">Filter by type</p>
+            {IMAGE_FILTER_TAGS.map((tag) => (
+              <button key={String(tag.id)} onClick={() => onImageTagSelect(tag.id)}
+                className={`mb-0.5 flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors ${activeImageTag === tag.id ? "bg-indigo-50 font-bold text-indigo-700" : "text-zinc-600 hover:bg-zinc-50"}`}>
+                {tag.label}
+              </button>
+            ))}
+            <div className="mt-6 border-t border-zinc-100 pt-4">
+              <p className="px-3 text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-2">Works with</p>
+              {["Gemini", "Midjourney", "DALL·E 3", "Flux"].map((m) => (
+                <div key={m} className="px-3 py-1 text-xs text-zinc-500">✦ {m}</div>
+              ))}
+            </div>
           </>
         ) : (
           <>
@@ -473,6 +596,10 @@ export default function Library() {
   const [categoryCounts, setCategoryCounts] = useState({});
   const [allSubcategories, setAllSubcategories] = useState([]);
   const [searchFocused, setSearchFocused] = useState(false);
+
+  // Image prompts state
+  const [activeImageTag, setActiveImageTag] = useState(null);
+  const [imageModalPrompt, setImageModalPrompt] = useState(null);
 
   // Bundles (Goal Packs) state
   const [bundles, setBundles] = useState([]);
@@ -692,6 +819,8 @@ export default function Library() {
         bundles={bundles}
         activeBundleCat={activeBundleCat}
         onBundleCatSelect={setActiveBundleCat}
+        activeImageTag={activeImageTag}
+        onImageTagSelect={setActiveImageTag}
       />
 
       <div className="flex flex-1 flex-col overflow-hidden">
@@ -867,6 +996,40 @@ export default function Library() {
                     ))}
                   </div>
                 )}
+              </div>
+            );
+          })()}
+
+          {/* ── Image Prompts section ── */}
+          {activeSection === "images" && (() => {
+            const allImagePrompts = PROMPTS.imagegen || [];
+            const filtered = activeImageTag
+              ? allImagePrompts.filter((p) => p.tags?.includes(activeImageTag))
+              : allImagePrompts;
+            return (
+              <div>
+                <div className="mb-6 flex items-baseline gap-3">
+                  <h1 className="text-2xl font-black text-zinc-900">
+                    {activeImageTag
+                      ? (IMAGE_FILTER_TAGS.find((t) => t.id === activeImageTag)?.label || activeImageTag)
+                      : "🎨 Image Prompts"}
+                  </h1>
+                  <span className="rounded-full bg-indigo-100 px-2.5 py-0.5 text-sm font-black text-indigo-600 tabular-nums">
+                    {filtered.length}
+                  </span>
+                </div>
+                <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                  {filtered.map((prompt) => (
+                    <ImagePromptCard key={prompt.id} prompt={prompt} onOpen={setImageModalPrompt} />
+                  ))}
+                </div>
+
+                {/* Image prompt modal */}
+                <AnimatePresence>
+                  {imageModalPrompt && (
+                    <ImagePromptModal prompt={imageModalPrompt} onClose={() => setImageModalPrompt(null)} />
+                  )}
+                </AnimatePresence>
               </div>
             );
           })()}
