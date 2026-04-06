@@ -317,31 +317,71 @@ const GroupedGrid = ({ prompts, onOpen, savedIds, onToggleSave, user }) => {
 };
 
 // ── Image Prompt Card ─────────────────────────────────────────────────────────
-const ImagePromptCard = ({ prompt, onOpen }) => (
+// ── Image Lightbox (full-screen image view) ───────────────────────────────────
+const ImageLightbox = ({ src, alt, onClose }) => (
+  <motion.div
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    exit={{ opacity: 0 }}
+    className="fixed inset-0 z-[60] flex items-center justify-center bg-black/90 p-4 cursor-zoom-out"
+    onClick={onClose}
+  >
+    <motion.img
+      initial={{ scale: 0.9, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      exit={{ scale: 0.9, opacity: 0 }}
+      transition={{ duration: 0.2 }}
+      src={src}
+      alt={alt}
+      className="max-h-[90vh] max-w-[90vw] rounded-xl object-contain shadow-2xl"
+      onClick={(e) => e.stopPropagation()}
+    />
+    <button
+      onClick={onClose}
+      className="absolute right-5 top-5 rounded-full bg-white/10 p-2 text-white hover:bg-white/20 transition-colors"
+    >
+      <FiX size={20} />
+    </button>
+  </motion.div>
+);
+
+// ── Image Prompt Card ─────────────────────────────────────────────────────────
+const ImagePromptCard = ({ prompt, onOpen, onLightbox }) => (
   <motion.div
     layout
     initial={{ opacity: 0, y: 12 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ duration: 0.15 }}
-    className="group flex flex-col rounded-xl border-2 border-zinc-200 bg-white overflow-hidden transition-all hover:border-indigo-400 hover:shadow-md cursor-pointer"
+    className="group flex flex-col rounded-xl border-2 border-zinc-200 bg-white overflow-hidden transition-all hover:border-indigo-400 hover:shadow-lg cursor-pointer"
     onClick={() => onOpen(prompt)}
   >
     {prompt.imageUrl ? (
-      <div className="relative h-44 overflow-hidden bg-zinc-100">
+      <div className="relative h-56 overflow-hidden bg-zinc-100">
         <img
           src={prompt.imageUrl}
           alt={prompt.title}
-          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+        {/* Hover overlay with zoom button */}
+        <div className="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/20 transition-all duration-300">
+          <button
+            onClick={(e) => { e.stopPropagation(); onLightbox(prompt.imageUrl, prompt.title); }}
+            className="flex items-center gap-1.5 rounded-full bg-white/90 px-3 py-1.5 text-xs font-bold text-zinc-800 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-200 shadow-lg hover:bg-white"
+          >
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>
+            </svg>
+            View full
+          </button>
+        </div>
       </div>
     ) : (
-      <div className="flex h-44 items-center justify-center bg-gradient-to-br from-indigo-50 to-purple-50">
+      <div className="flex h-56 items-center justify-center bg-gradient-to-br from-indigo-50 to-purple-50">
         <span className="text-5xl">🎨</span>
       </div>
     )}
     <div className="p-4">
-      <h3 className="font-bold text-sm text-zinc-900 leading-snug line-clamp-2">{prompt.title}</h3>
+      <h3 className="font-bold text-sm text-zinc-900 leading-snug">{prompt.title}</h3>
       <p className="mt-1 text-xs text-zinc-500 line-clamp-2">{prompt.description}</p>
       <div className="mt-3 flex flex-wrap gap-1">
         {(prompt.tags || []).slice(0, 3).map((tag) => (
@@ -353,7 +393,7 @@ const ImagePromptCard = ({ prompt, onOpen }) => (
 );
 
 // ── Image Prompt Modal ────────────────────────────────────────────────────────
-const ImagePromptModal = ({ prompt, onClose }) => {
+const ImagePromptModal = ({ prompt, onClose, onLightbox }) => {
   const [copied, setCopied] = useState(false);
   const handleCopy = () => {
     navigator.clipboard.writeText(prompt.prompt);
@@ -372,8 +412,14 @@ const ImagePromptModal = ({ prompt, onClose }) => {
       >
         <button onClick={onClose} className="absolute right-4 top-4 rounded-lg p-1.5 text-zinc-400 hover:bg-zinc-100"><FiX size={18} /></button>
         {prompt.imageUrl && (
-          <div className="overflow-hidden rounded-xl border-2 border-zinc-200">
-            <img src={prompt.imageUrl} alt={prompt.title} className="w-full object-cover max-h-72" />
+          <div
+            className="group relative overflow-hidden rounded-xl border-2 border-zinc-200 cursor-zoom-in"
+            onClick={(e) => { e.stopPropagation(); onLightbox(prompt.imageUrl, prompt.title); }}
+          >
+            <img src={prompt.imageUrl} alt={prompt.title} className="w-full object-cover max-h-80 group-hover:scale-[1.02] transition-transform duration-300" />
+            <div className="absolute inset-0 flex items-end justify-end p-3 opacity-0 group-hover:opacity-100 transition-opacity">
+              <span className="rounded-full bg-black/60 px-2.5 py-1 text-[11px] font-bold text-white">Click to expand</span>
+            </div>
           </div>
         )}
         <div className="flex flex-wrap gap-1">
@@ -600,6 +646,9 @@ export default function Library() {
   // Image prompts state
   const [activeImageTag, setActiveImageTag] = useState(null);
   const [imageModalPrompt, setImageModalPrompt] = useState(null);
+  const [lightboxSrc, setLightboxSrc] = useState(null);
+  const [lightboxAlt, setLightboxAlt] = useState("");
+  const openLightbox = (src, alt) => { setLightboxSrc(src); setLightboxAlt(alt); };
 
   // Bundles (Goal Packs) state
   const [bundles, setBundles] = useState([]);
@@ -1020,14 +1069,14 @@ export default function Library() {
                 </div>
                 <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
                   {filtered.map((prompt) => (
-                    <ImagePromptCard key={prompt.id} prompt={prompt} onOpen={setImageModalPrompt} />
+                    <ImagePromptCard key={prompt.id} prompt={prompt} onOpen={setImageModalPrompt} onLightbox={openLightbox} />
                   ))}
                 </div>
 
                 {/* Image prompt modal */}
                 <AnimatePresence>
                   {imageModalPrompt && (
-                    <ImagePromptModal prompt={imageModalPrompt} onClose={() => setImageModalPrompt(null)} />
+                    <ImagePromptModal prompt={imageModalPrompt} onClose={() => setImageModalPrompt(null)} onLightbox={openLightbox} />
                   )}
                 </AnimatePresence>
               </div>
@@ -1278,6 +1327,9 @@ export default function Library() {
       </div>
 
       <AnimatePresence>
+        {lightboxSrc && (
+          <ImageLightbox src={lightboxSrc} alt={lightboxAlt} onClose={() => setLightboxSrc(null)} />
+        )}
         {selectedPrompt && (
           <PromptModal
             prompt={selectedPrompt}

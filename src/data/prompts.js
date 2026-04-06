@@ -956,7 +956,8 @@ Structure:
       description: "Best for Retargeting campaigns, trust-building ads, converting warm audiences.",
       prompt: `Create a testimonial-style advertisement image for [PRODUCT].\n\nLayout: Clean, editorial design — feels like a magazine quote feature\nBackground: Soft neutral — warm white, light cream, or very light [COLOR]\nProduct: [PRODUCT] photographed cleanly and placed on one side (left or right) — takes up 35% of the frame\nTestimonial block: The other 65% of the frame contains:\n  - Large opening quotation mark in [BRAND COLOR] — decorative and large\n  - Empty space for the testimonial text (3-4 lines)\n  - Below the quote: small avatar circle placeholder for customer photo\n  - Customer name space and star rating (5 stars in [COLOR])\nDesign style: Elegant, trustworthy, editorial — like a high-end brand's website testimonial section\nRating element: 5 gold or [COLOR] stars prominently displayed\nVerified badge: Small "Verified Purchase" or "Real Customer" badge in corner\nMood: Credible, warm, trustworthy, human, reassuring\n\nThe design should make the testimonial feel real and significant — not like a fake review.\nAll text spaces are empty — only show the visual layout.\nAspect ratio: 4:5 or 1:1`,
       tags: ["ad", "testimonial", "social-proof"],
-      model: "Gemini"
+      model: "Gemini",
+      imageUrl: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=800&q=80&fit=crop"
     },
     {
       id: "ad19",
@@ -964,7 +965,8 @@ Structure:
       description: "Best for Quality showcase, premium positioning, materials and craftsmanship emphasis.",
       prompt: `Create an extreme close-up advertisement photograph of [PRODUCT] highlighting its quality and craftsmanship.\n\nShot type: Macro or extreme close-up — fill the entire frame with the product detail\nFocus area: The most impressive, beautiful, or quality-demonstrating part of [PRODUCT] — the texture / material / finish / intricate detail / precision engineering\nDepth of field: Very shallow — the focal point is razor sharp, everything else falls into beautiful blur\nLighting: Dramatic side lighting that rakes across the surface, revealing texture and depth\nBackground: The rest of the product itself, beautifully blurred into an abstract [COLOR] bokeh\nColor: Rich, accurate material colors — let the material beauty speak for itself\nDetail reveal: The image should reveal something about the product that you would miss at normal viewing distance\nMood: Premium, meticulous, quality-obsessed, artisanal\n\nThis image communicates "this product is made better than you realize."\nNo text. No props. Pure product detail.\nAspect ratio: 1:1`,
       tags: ["ad", "close-up", "detail"],
-      model: "Gemini"
+      model: "Gemini",
+      imageUrl: "https://images.unsplash.com/photo-1585386959984-a4155224a1ad?w=800&q=80&fit=crop"
     },
     {
       id: "ad20",
@@ -972,7 +974,8 @@ Structure:
       description: "Best for Competitive categories, switching campaigns, differentiation from generic alternatives.",
       prompt: `Create a product comparison advertisement image featuring [PRODUCT] versus a generic alternative.\n\nLayout: Two-column comparison design\nLEFT COLUMN — COMPETITOR / GENERIC:\n  - Header: "Other Brands" or "The Old Way"\n  - Visual: A generic, unbranded version of the product category — looks ordinary, cheap, or dated\n  - Below visual: 3-4 checkboxes with X marks (red) next to empty text areas\n  - Color treatment: Slightly desaturated, cooler tones\n  - Background: Light grey\n\nRIGHT COLUMN — [PRODUCT]:\n  - Header: [PRODUCT NAME SPACE] or "The Better Way"\n  - Visual: [PRODUCT] looking premium, clean, and impressive — identical framing to the left side but clearly superior\n  - Below visual: 3-4 checkboxes with checkmarks (green or [BRAND COLOR]) next to empty text areas\n  - Color treatment: Warm, vibrant, full color\n  - Background: White or very light [BRAND COLOR]\n\nDividing element: "VS" in a bold circle between the two columns\nWinner indicator: Subtle highlight, glow, or badge on the right column indicating it is the winner\nText areas: All feature text spaces are empty — only show the comparison layout structure\nOverall style: Clean, infographic-style, immediately readable\nMood: Confident, factual, clearly superior\n\nAspect ratio: 1:1 or 16:9`,
       tags: ["ad", "comparison", "us-vs-them"],
-      model: "Gemini"
+      model: "Gemini",
+      imageUrl: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80&fit=crop"
     },
     {
       id: "ig1",
@@ -994,6 +997,7 @@ Output:
 4. Tip for getting consistent results across generations`,
       tags: ["midjourney", "ai art", "prompt"],
       model: "Midjourney",
+      imageUrl: "https://images.unsplash.com/photo-1547954575-855750c57bd3?w=800&q=80&fit=crop"
     },
     {
       id: "ig2",
@@ -1014,6 +1018,7 @@ Write:
 4. Regeneration tip if first result misses the mark`,
       tags: ["flux", "dall-e", "ai image"],
       model: "DALL-E / Flux",
+      imageUrl: "https://images.unsplash.com/photo-1617791160505-6f00504e3519?w=800&q=80&fit=crop"
     },
   ],
 
